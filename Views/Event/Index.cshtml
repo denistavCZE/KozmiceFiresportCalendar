@@ -1,0 +1,95 @@
+﻿@model List<Event>
+@{
+    ViewData["Title"] = "Akce";
+}
+
+@foreach (var ev in Model)
+{
+    <div class="row">
+        <div class="col-1" style="margin-top: 10px;">
+            @if (ViewBag.ConfirmedEvents.Contains(ev.Id))
+            {
+                <button id="@ev.Id-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmEvent(@ev.Id)">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+
+                <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineEvent(@ev.Id)">
+                    <i class="fa fa-lg fa-times"></i>
+                </button>
+            }
+            else
+            {
+                <button id="@ev.Id-con" class="mt-1 btn-sm btn-success" onclick="ConfirmEvent(@ev.Id)">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
+
+                <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineEvent(@ev.Id)">
+                    <i class="fa fa-lg fa-times"></i>
+                </button>
+            }
+        </div>
+        <div class="col-9">
+            <div id="@ev.Id" class="text-left race mb-4">
+                <div class="border-bottom rounded-3" style="background-color: yellow;">
+                    <h4 class="ms-2 pt-1">
+                        @ev.DateTime.ToString("d.M. - HH:mm") @ev.Name - @ev.Place
+                    </h4>    
+                </div>
+
+                <div class="container d-flex">
+                </div>
+            </div>
+        </div>
+        <div class="col-1" style="margin-top: 10px">
+            <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Detail", "Event", new {id = ev.Id})'">Detail</button>
+        </div>
+    </div>
+}
+
+<script>
+
+    function ConfirmEvent(eventId) {
+        $.ajax({
+            url: '@Url.Action("ConfirmEvent", "Event")',
+            type: 'POST',
+            data: { eventId: eventId },
+            success: function (response) {
+                // Switch buttons
+                var thisButton = document.getElementById(eventId + "-con");
+                var otherButton = document.getElementById(eventId + "-dec");
+                ToggleButtons(thisButton, otherButton);
+            },
+            error: function (xhr, status, error) {
+                alert('Nastala chyba při odesílání dat: ' + error);
+            }
+        });
+    };
+
+    function DeclineEvent(eventId) {
+        $.ajax({
+            url: '@Url.Action("DeclineEvent", "Event")',
+            type: 'POST',
+            data: { eventId: eventId},
+            success: function (response) {
+                // Switch buttons
+                var thisButton = document.getElementById(eventId + "-con");
+                var otherButton = document.getElementById(eventId + "-dec");
+                ToggleButtons(thisButton, otherButton);
+            },
+            error: function (xhr, status, error) {
+                alert('Nastala chyba při odesílání dat: ' + error);
+            }
+        });
+    };
+
+    function ToggleButtons(button1, button2) {
+        if (button1.classList.contains("d-none")) {
+            button1.classList.remove("d-none");
+            button2.classList.add("d-none");
+        }
+        else {
+            button1.classList.add("d-none");
+            button2.classList.remove("d-none");
+        }
+    }
+</script>

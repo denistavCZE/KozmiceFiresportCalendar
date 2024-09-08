@@ -1,0 +1,24 @@
+﻿@model EventDetailModel
+@{
+    ViewData["Title"] = "Akce";
+}
+<div class="text-left race mb-4 " style="min-height: 200px">
+
+    <div class="col-12 border-bottom border-3">
+        <h1 style="margin-left: 20px;">@Model.Event.Name</h1>
+        <h2 style="margin-left: 20px;">@Model.Event.Place</h2>
+        <h3 style="margin-left: 20px;">@Model.Event.DateTime.ToString("d.M. - HH:mm")</h3>
+    </div>
+    @if(Model.People.Count == 0)
+    {
+        <h4 class="ms-2 pt-1">
+            K této akci zatím nikdo nepotvrdil účast...
+        </h4>
+    }
+    @foreach (var person in Model.People)
+    {
+        <h4 class="ms-2 pt-1">
+            @person
+        </h4>
+    }
+</div>

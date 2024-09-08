@@ -1,0 +1,202 @@
+﻿@model RaceListModel
+@{
+    ViewData["Title"] = "Závody";
+}
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <button class="mt-1 btn btn-warning" onclick="location.href='@Url.Action("RacesAdmin", "Team", new {id = ViewBag.TeamId})'">Editační mód</button>
+}
+@foreach (var race in Model.TeamRaces)
+{
+    <div id="@race.RaceId" class="text-left race">
+        @switch(race.Race.League?.Name)
+        {
+        case "OL":
+            <div class="border-bottom header text-white ol">
+                    <h4>
+                        @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                        @if(race.Race.Timer){
+                            <text> + Časomír</text> 
+                        }
+                    </h4>
+            </div>
+            break; 
+        case "NHHL":
+            <div class="border-bottom header text-white nocni">
+                    <h4>
+                        @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                        @if (race.Race.Timer)
+                        {
+                            <text> + Časomír</text>
+                        }
+                    </h4>
+            </div>
+            break;
+        case "MSP":
+            <div class="border-bottom header text-white msp">
+                    <h4>
+                        @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                        @if (race.Race.Timer)
+                        {
+                            <text> + Časomír</text>
+                        }
+                    </h4>
+            </div>
+            break;
+        case "Akce":
+            <div class="border-bottom header" style="background-color: yellow;">
+                    <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+            </div>
+            break;
+        default:
+            <div class="border-bottom header text-white" style="background-color: deeppink">
+                    <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+            </div>
+            break;
+        }
+
+        <div class="container d-flex">
+            <div class="col-12 d-flex p mt-2">
+                <div class="col-sm-6 pe-1">
+                    @for(int position = 1 ; position < 4 ; position++)
+                    {
+                        
+                        string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
+                        
+                        <div class="row mb-3">
+                            <div class="col-1">
+                                @if (assignedUsername == @User.Identity.Name)
+                                {
+                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-lg fa-times"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-lg fa-times"></i>
+                                    </button>
+                                }
+                            </div>
+                            
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-6">
+                    @for (int position = 4; position < 8; position++)
+                    {
+                        string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
+
+                        <div class="row mb-3">
+                            <div class="col-1">
+                                @if (assignedUsername == @User.Identity.Name)
+                                {
+                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-lg fa-times"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    </button>
+
+                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                        <i class="fa fa-lg fa-times"></i>
+                                    </button>
+                                }
+                            </div>
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
+                            <div class="col-sm-9">                           
+                                <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    
+    function ConfirmRace(teamId, raceId, positionId) {
+        $.ajax({
+            url: '@Url.Action("ConfirmRace", "Team")',
+            type: 'POST',
+            data: { teamId: teamId, raceId: raceId, positionId: positionId },
+            success: function (response) {
+                SetPersonToInput(raceId, positionId);
+            },
+            error: function (xhr, status, error) {
+                alert('Nastala chyba při odesílání dat: ' + error);
+            }
+        });
+    };
+
+    function DeclineRace(teamId, raceId, positionId) {
+        $.ajax({
+            url: '@Url.Action("DeclineRace", "Team")',
+            type: 'POST',
+            data: { teamId: teamId, raceId: raceId, positionId: positionId },
+            success: function (response) {
+                SetPersonToInput(raceId, 0);
+            },
+            error: function (xhr, status, error) {
+                alert('Nastala chyba při odesílání dat: ' + error);
+            }
+        });
+    };
+
+    function SetPersonToInput(raceId, positionId){
+
+        for (var i = 1; i < 8; i++) {
+
+            var oldInput = document.getElementById(raceId + "-" + i);
+            if (oldInput.value.includes("@User.Identity.Name")) {
+                var oldDecButton = document.getElementById(raceId + "-" + i + "-" + "dec");
+                var oldConButton = document.getElementById(raceId + "-" + i + "-" + "con");
+                oldInput.value = "";
+                oldDecButton.classList.add("d-none");
+                oldConButton.classList.remove("d-none");
+            }
+        }
+        if (positionId != 0) {
+            var newInput = document.getElementById(raceId + "-" + positionId);
+            newInput.value = "@User.Identity.Name";
+        }
+
+        // Switch buttons
+        var thisButton = document.getElementById(raceId + "-" + positionId + "-" + "con");
+        var otherButton = document.getElementById(raceId + "-" + positionId + "-" + "dec");   
+        ToggleButtons(thisButton, otherButton);
+
+    }
+
+    function ToggleButtons(button1, button2){
+        if(button1.classList.contains("d-none")){
+            button1.classList.remove("d-none");
+            button2.classList.add("d-none");
+        }
+        else{
+            button1.classList.add("d-none");
+            button2.classList.remove("d-none");
+        }
+    }
+</script>

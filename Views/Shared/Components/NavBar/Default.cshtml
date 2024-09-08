@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model List<Team>
+@inject SignInManager<Person> SignInManager
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FiresportCalendar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    @if (SignInManager.IsSignedIn(User) && User.Identity.IsAuthenticated && User.IsInRole("Member"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-action="Index" asp-controller="Event" class="nav-link">
+                                Akce
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-action="TimerRaces" asp-controller="Team" class="nav-link">
+                                Časomíra
+                            </a>
+                        </li>
+                        @foreach (var team in Model)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-action="Races" asp-controller="Team" asp-route-id="@team.Id" class="nav-link">
+                                    @team.Name
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </nav>
+</header>
