@@ -9,17 +9,17 @@ namespace FiresportCalendar.ViewComponents
     public class NavBarViewComponent : ViewComponent
     {
         private readonly ApplicationDbContext _context;
-
-        public NavBarViewComponent(ApplicationDbContext context)
+        private readonly ITeamService _teamService;
+        public NavBarViewComponent(ApplicationDbContext context, ITeamService teamService)
         {
             _context = context;
+            _teamService = teamService;
         }
      
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            // this is how to avoid error of can't convert IQueryable to IEnumerable
-            List<Team> teams = await _context.Teams.ToListAsync();
+            List<Team> teams = await _teamService.GetActiveTeams();
             return View(teams);
         }
     }

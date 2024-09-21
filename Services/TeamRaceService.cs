@@ -17,7 +17,7 @@ namespace FiresportCalendar.Services
         }
         public async Task<List<TeamRace>> GetTeamRacesByTeamId(int teamId)
         {
-            return await _context.TeamRaces.Where(tr => tr.Team.Id == teamId && tr.Race.DateTime >= DateTime.Today).OrderBy(tr => tr.Race.DateTime).ToListAsync();
+            return await _context.TeamRaces.Where(tr => tr.Team.Id == teamId && tr.Race.DateTime > DateTime.Today).OrderBy(tr => tr.Race.DateTime).ToListAsync();
         }
         public async Task<List<TeamRacePerson>> GetTeamRacePeople(int raceId, int teamId)
         {

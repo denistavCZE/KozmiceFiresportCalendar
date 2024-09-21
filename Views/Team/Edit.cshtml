@@ -1,0 +1,363 @@
+﻿@model TeamEditModel
+@{
+    ViewData["Title"] = "Události";
+}
+<div class="container">
+    <form method="post" asp-controller="Team" asp-action="AddMember">
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+
+        <label class="col-sm-2 col-form-label" for="AddMember">Přidat člena</label>
+        <div class="row">
+            <div class="col-sm-4">
+                <select name="personId" id="AddMember" class="form-control position-select" required>
+                    <option value=""></option>
+                    @foreach (var person in Model.NonMembers)
+                    {
+                        <option value="@person.Id">@person.UserName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="AddMemberButton" class="mt-1 btn-sm btn-success">
+                    Přidat
+                </button>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-controller="Team" asp-action="RemoveMember">
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+
+        <label class="col-sm-2 col-form-label" for="RemoveMember">Odebrat člena</label>
+        <div class="row">
+            <div class="col-sm-4">
+                <select name="personId" id="RemoveMember" class="form-control position-select" required>
+                    <option value=""></option>
+                    @foreach (var person in Model.Team.People)
+                    {
+                        <option value="@person.Id">@person.UserName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="RemoveMemberButton" class="mt-1 btn-sm btn-danger">
+                    Odebrat
+                </button>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-controller="Team" asp-action="AddLeague">
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+
+        <label class="col-sm-2 col-form-label" for="AddLeague">Přidat ligu</label>
+        <div class="row">
+            <div class="col-sm-4">
+                <select name="leagueId" id="AddLeague" class="form-control position-select" required>
+                    <option value=""></option>
+                    @foreach (var league in Model.NonTeamLeagues)
+                    {
+                        <option value="@league.Id">@league.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="AddLeagueButton" class="mt-1 btn-sm btn-success">
+                    Přidat
+                </button>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-controller="Team" asp-action="RemoveLeague">
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+
+        <label class="col-sm-2 col-form-label" for="RemoveLeague">Odebrat ligu</label>
+        <div class="row">
+            <div class="col-sm-4">
+                <select name="leagueId" id="RemoveLeague" class="form-control position-select" required>
+                    <option value=""></option>
+                    @foreach (var league in Model.Team.Leagues)
+                    {
+                        <option value="@league.Id">@league.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="RemoveLeagueButton" class="mt-1 btn-sm btn-danger">
+                    Odebrat
+                </button>
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-controller="Team" asp-action="AddRace">
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+        <label class="col-sm-2 col-form-label" for="AddRace">Přidat závod</label>
+        <div class="row">
+            <div class="col-sm-4">
+                <select name="raceId" id="AddRace" class="form-control position-select" required>
+                    <option value=""></option>
+                    @foreach (var race in Model.NonTeamRaces)
+                    {
+                        <option value="@race.Id">@race.DateTime.ToString("d.M.") @race.League?.Name @race.Place</option>
+                    }
+                </select>
+            </div>
+            <div class="col-1">
+                <button type="submit" id="AddRaceButton" class="mt-1 btn-sm btn-success">
+                    Přidat
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+@foreach (var race in Model.Team.TeamRaces)
+{
+    <form method="post" asp-controller="Team" asp-action="SetRacePositions" onsubmit="saveScrollPosition()">
+        @Html.AntiForgeryToken()
+        <input name="teamId" type="hidden" value="@Model.Team.Id" />
+        <input name="raceId" type="hidden" value="@race.Race.Id" />
+
+        <div class="text-left race">
+            @switch(race.Race.League?.Name)
+            {
+            case "OL":
+                <div class="border-bottom header text-white ol">
+                        <h4>
+                            @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                            @if(race.Race.Timer){
+                                <text> + Časomír</text> 
+                            }
+                        </h4>
+                </div>
+                break; 
+            case "NHHL":
+                <div class="border-bottom header text-white nocni">
+                        <h4>
+                            @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                            @if (race.Race.Timer)
+                            {
+                                <text> + Časomír</text>
+                            }
+                        </h4>
+                </div>
+                break;
+            case "MSP":
+                <div class="border-bottom header text-white msp">
+                        <h4>
+                            @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
+                            @if (race.Race.Timer)
+                            {
+                                <text> + Časomír</text>
+                            }
+                        </h4>
+                </div>
+                break;
+            case "Akce":
+                <div class="border-bottom header" style="background-color: yellow;">
+                        <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+                </div>
+                break;
+            default:
+                <div class="border-bottom header text-white" style="background-color: deeppink">
+                        <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+                </div>
+                break;
+            }
+
+            <div class="container d-flex">
+                <div class="col-12 d-flex p mt-2">
+                    <div class="col-6 pe-1">
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-1">Koš:</label>
+                            <div class="col-sm-9">
+                                <select name="kos" id="@race.RaceId-1" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach(var person in Model.AllPeople)
+                                    {
+                                        if(person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 1)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-2">Spoj:</label>
+                            <div class="col-sm-9">
+                                <select name="spoj" id="@race.RaceId-2" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 2)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-3">Stroj:</label>
+                            <div class="col-sm-9">
+                                <select name="stroj" id="@race.RaceId-3" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 3)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-1">
+                                <button type="submit" id="@race.RaceId-save" class="mt-1 btn-sm btn-success">
+                                    Uložit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-4">Béčka:</label>
+                            <div class="col-sm-9">
+                                <select name="becka" id="@race.RaceId-4" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 4)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-5">Rozděl:</label>
+                            <div class="col-sm-9">
+                                <select name="rozdel" id="@race.RaceId-5" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 5)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-6">Levý:</label>
+                            <div class="col-sm-9">
+                                <select name="lp" id="@race.RaceId-6" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 6)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-1 col-form-label" for="@race.RaceId-7">Pravý:</label>
+                            <div class="col-sm-9">
+                                <select name="pp" id="@race.RaceId-7" class="form-control position-select">
+                                    <option value=""></option>
+
+                                    @foreach (var person in Model.AllPeople)
+                                    {
+                                        if (person.Id == race.TeamRacePeople.FirstOrDefault(x => x.Position == 7)?.PersonId)
+                                        {
+                                            <option value="@person.Id" selected>@person.UserName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@person.Id">@person.UserName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+<script>
+    $(document).ready(function () {
+        $('.position-select').change(function () {
+            var selectedPersonId = $(this).val(); 
+
+            var $currentForm = $(this).closest('form');
+
+
+            $currentForm.find('.position-select').not(this).each(function () {
+                var selects = this.options;
+                if ($(this).val() == selectedPersonId) {
+                    $(this).val("");
+                    // for (var i = 0; i < selects.length; i++) {
+                    //     selects[i].selected = false;
+                    // }
+                }
+            });
+        });
+    });
+
+
+
+
+    // Uložení aktuální pozice scrollu
+    function saveScrollPosition() {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    }
+
+    // Obnovení pozice scrollu po načtení stránky
+    window.onload = function () {
+        const scrollPosition = sessionStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            window.scrollTo(0, parseInt(scrollPosition));
+            sessionStorage.removeItem('scrollPosition'); // Odstranění pozice po jejím použití
+        }
+    };
+</script>

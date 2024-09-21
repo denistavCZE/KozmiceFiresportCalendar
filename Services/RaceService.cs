@@ -15,6 +15,14 @@ namespace FiresportCalendar.Services
             _context = context;
            
         }
+        public async Task<List<Race>> GetAllRaces()
+        {
+            return await _context.Races.ToListAsync();
+        }
+        public async Task<List<Race>> GetAllUpcomingRaces()
+        {
+            return await _context.Races.Where(r => r.DateTime > DateTime.Today).ToListAsync();
+        }
         public async Task<Race?> GetRaceById(int raceId)
         {
             return await _context.Races.FirstAsync(r => r.Id == raceId);
@@ -27,11 +35,6 @@ namespace FiresportCalendar.Services
         public async Task<List<Race>> GetTimerRaces()
         {
             var res = await _context.Races.Where(r => r.Timer).OrderBy(r => r.DateTime).ToListAsync();
-            return res;
-        }
-        public async Task<League?> GetLeague(int leagueId)
-        {
-            var res = await _context.Leagues.FirstAsync(l => l.Id == leagueId);
             return res;
         }
 

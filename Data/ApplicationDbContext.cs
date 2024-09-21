@@ -98,6 +98,12 @@ namespace FiresportCalendar.Data
                 .HasMany(t => t.People)
                 .WithMany(p => p.Teams)
                 .UsingEntity(j => j.ToTable("TeamPeople"));
+
+            // Team to League (Many-to-Many)
+            modelBuilder.Entity<Team>()
+                .HasMany(t => t.Leagues)
+                .WithMany(l => l.Teams)
+                .UsingEntity(j => j.ToTable("TeamLeagues"));
         }
     }
 }

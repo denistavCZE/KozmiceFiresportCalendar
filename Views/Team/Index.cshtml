@@ -1,0 +1,25 @@
+﻿@model List<Team>
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    foreach (var team in Model)
+    {
+        <div class="row">
+            <div class="col-10">
+                <div id="@team.Id" class="text-left race mb-4">
+                    <div class="border-bottom rounded-3" style="background-color: yellow;">
+                        <h4 class="ms-2 pt-1">
+                            @team.Name - @((team.Active)?"Aktivní":"Neaktivní")
+                        </h4>    
+                    </div>
+
+                   @*  <div class="container d-flex">
+                    </div> *@
+                </div>
+            </div>
+            <div class="col-1" style="margin-top: 10px">
+                <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Team", new {id = team.Id})'">Upravit</button>
+            </div>
+        </div>
+    }
+}
+
