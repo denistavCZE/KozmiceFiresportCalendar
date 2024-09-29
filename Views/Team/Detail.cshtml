@@ -1,11 +1,8 @@
-﻿@model RaceListModel
+﻿@model Team
 @{
     ViewData["Title"] = "Závody";
 }
-@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-{
-    <button class="mt-1 btn btn-warning" onclick="location.href='@Url.Action("RacesAdmin", "Team", new {id = ViewBag.TeamId})'">Editační mód</button>
-}
+
 @foreach (var race in Model.TeamRaces)
 {
     <div id="@race.RaceId" class="text-left race">
@@ -62,31 +59,33 @@
                     {
                         
                         string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
-                        
+
                         <div class="row mb-3">
-                            <div class="col-1">
-                                @if (assignedUsername == @User.Identity.Name)
-                                {
-                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                    </button>
+                            @if (Model.People.Any(p => p.UserName == User.Identity.Name))
+                            {
+                                <div class="col-1">
+                                    @if (assignedUsername == User.Identity.Name)
+                                    {
+                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        </button>
 
-                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-lg fa-times"></i>
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                    </button>
+                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-lg fa-times"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        </button>
 
-                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-lg fa-times"></i>
-                                    </button>
-                                }
-                            </div>
-                            
+                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-lg fa-times"></i>
+                                        </button>
+                                    }
+                                </div>
+                            }
                             <label class="col-sm-1 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
                             <div class="col-sm-9">
                                 <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
@@ -100,28 +99,31 @@
                         string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
 
                         <div class="row mb-3">
-                            <div class="col-1">
-                                @if (assignedUsername == @User.Identity.Name)
-                                {
-                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                    </button>
+                            @if (Model.People.Any(p => p.UserName == User.Identity.Name))
+                            {
+                                <div class="col-1">
+                                    @if (assignedUsername == @User.Identity.Name)
+                                    {
+                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        </button>
 
-                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-lg fa-times"></i>
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                    </button>
+                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-lg fa-times"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        </button>
 
-                                    <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                        <i class="fa fa-lg fa-times"></i>
-                                    </button>
-                                }
-                            </div>
+                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                            <i class="fa fa-lg fa-times"></i>
+                                        </button>
+                                    }
+                                </div>
+                            }
                             <label class="col-sm-1 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
                             <div class="col-sm-9">                           
                                 <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />

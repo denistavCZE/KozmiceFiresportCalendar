@@ -3,6 +3,7 @@
     ViewData["Title"] = "Události";
 }
 <div class="container">
+
     <form method="post" asp-controller="Team" asp-action="AddMember">
         <input name="teamId" type="hidden" value="@Model.Team.Id" />
 
@@ -122,17 +123,25 @@
             @switch(race.Race.League?.Name)
             {
             case "OL":
-                <div class="border-bottom header text-white ol">
+                <div class="border-bottom header text-white ol row m-0">
+                    <div class="col-sm-11">
                         <h4>
                             @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
                             @if(race.Race.Timer){
                                 <text> + Časomír</text> 
                             }
                         </h4>
+                    </div>
+                    <div class="col-sm-1">
+                        <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                            Odebrat
+                        </button>
+                    </div>
                 </div>
                 break; 
             case "NHHL":
-                <div class="border-bottom header text-white nocni">
+                <div class="border-bottom header text-white nocni  row m-0">
+                    <div class="col-sm-11">
                         <h4>
                             @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
                             @if (race.Race.Timer)
@@ -140,10 +149,17 @@
                                 <text> + Časomír</text>
                             }
                         </h4>
+                    </div>
+                    <div class="col-sm-1">
+                        <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                            Odebrat
+                        </button>
+                    </div>
                 </div>
                 break;
             case "MSP":
-                <div class="border-bottom header text-white msp">
+                <div class="border-bottom header text-white msp row m-0">
+                    <div class="col-sm-11">
                         <h4>
                             @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place
                             @if (race.Race.Timer)
@@ -151,16 +167,29 @@
                                 <text> + Časomír</text>
                             }
                         </h4>
+                    </div>
+                    <div class="col-sm-1">
+                        <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                            Odebrat
+                        </button>
+                    </div>
                 </div>
                 break;
             case "Akce":
                 <div class="border-bottom header" style="background-color: yellow;">
-                        <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+                    <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
                 </div>
                 break;
             default:
-                <div class="border-bottom header text-white" style="background-color: deeppink">
+                <div class="border-bottom header text-white row m-0" style="background-color: deeppink">
+                    <div class="col-sm-11">
                         <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+                    </div>
+                    <div class="col-sm-1">
+                        <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                            Odebrat
+                        </button>
+                    </div>
                 </div>
                 break;
             }
@@ -347,17 +376,27 @@
 
 
 
-    // Uložení aktuální pozice scrollu
     function saveScrollPosition() {
         sessionStorage.setItem('scrollPosition', window.scrollY);
     }
 
-    // Obnovení pozice scrollu po načtení stránky
     window.onload = function () {
         const scrollPosition = sessionStorage.getItem('scrollPosition');
         if (scrollPosition) {
             window.scrollTo(0, parseInt(scrollPosition));
-            sessionStorage.removeItem('scrollPosition'); // Odstranění pozice po jejím použití
+            sessionStorage.removeItem('scrollPosition');
         }
+    };
+
+    function RemoveRace(teamId, raceId) {
+        saveScrollPosition();
+        $.ajax({
+            url: '@Url.Action("RemoveRace", "Team")',
+            type: 'POST',
+            data: { teamId: teamId, raceId: raceId },
+            error: function (xhr, status, error) {
+                alert('Nastala chyba při odesílání dat: ' + error);
+            }
+        });
     };
 </script>

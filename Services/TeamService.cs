@@ -24,6 +24,7 @@ namespace FiresportCalendar.Services
                                                 .ThenInclude(r => r.League)
                                        .Include(t => t.TeamRaces.Where(tr => tr.Race.DateTime > DateTime.Today))
                                             .ThenInclude(tr => tr.TeamRacePeople)
+                                                .ThenInclude(trp => trp.Person)
                                        .FirstOrDefaultAsync(t => t.Id == teamId);
         }
         public async Task<List<Team>> GetTeams()
@@ -115,7 +116,55 @@ namespace FiresportCalendar.Services
             return true;
 
         }
+        public async Task<bool> AddRace(int teamId, int raceId)
+        {
+            var team = await _context.Teams.Include(t => t.TeamRaces).FirstOrDefaultAsync(t => t.Id == teamId);
+            if (team == null)
+                return false;
 
+            var race = await _context.Races.FirstOrDefaultAsync(r => r.Id == raceId);
+            if (race == null)
+                return false;
+
+            if (team.TeamRaces.Exists(tr => tr.RaceId == raceId))
+                return false;
+
+            TeamRace teamRace = new TeamRace(teamId, raceId);
+            team.TeamRaces.Add(teamRace);
+
+            _context.SaveChanges();
+
+            return true;
+
+        }
+        public async Task<bool> RemoveRace(int teamId, int raceId)
+        {
+            var team = await _context.Teams.Include(t => t.TeamRaces).FirstOrDefaultAsync(t => t.Id == teamId);
+            if (team == null)
+                return false;
+            
+            var teamRace = await _context.TeamRaces.FirstOrDefaultAsync(tr => tr.RaceId == raceId && tr.TeamId == teamId);
+            if (teamRace == null)    
+                return false;
+
+            team.TeamRaces.Remove(teamRace);
+
+            _context.SaveChanges();
+
+            return true;
+
+        }
+        public async Task<List<Person>> GetMembers(int teamId)
+        {
+            return (await _context.Teams.Include(t => t.People).FirstOrDefaultAsync(t => t.Id == teamId))?.People.ToList() ?? new List<Person>();
+        }
+        public async Task<bool> IsMember(int teamId, string personId)
+        {
+            var userName = (await _context.Users.FirstOrDefaultAsync(u => u.Id == personId))?.UserName;
+            if (userName == null)
+                return false;
+            return (await GetMembers(teamId)).Any(m => m.UserName == userName);
+        }
         public async Task<List<League>> GetTeamLeagues(int teamId)
         {
             var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId);
@@ -124,5 +173,7 @@ namespace FiresportCalendar.Services
 
             return team.Leagues.ToList();
         }
+
+
     }
 }
