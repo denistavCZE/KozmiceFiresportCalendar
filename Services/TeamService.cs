@@ -5,6 +5,7 @@ using System.Data;
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using FiresportCalendar.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FiresportCalendar.Services
 {
@@ -51,7 +52,7 @@ namespace FiresportCalendar.Services
                 return false;
             team.People.Add(person);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -71,7 +72,7 @@ namespace FiresportCalendar.Services
                 return false;
             team.People.Remove(person);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -92,7 +93,7 @@ namespace FiresportCalendar.Services
                 return false;
             team.Leagues.Add(league);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -111,7 +112,7 @@ namespace FiresportCalendar.Services
                 return false;
             team.Leagues.Remove(league);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -132,7 +133,7 @@ namespace FiresportCalendar.Services
             TeamRace teamRace = new TeamRace(teamId, raceId);
             team.TeamRaces.Add(teamRace);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -149,7 +150,7 @@ namespace FiresportCalendar.Services
 
             team.TeamRaces.Remove(teamRace);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
 
@@ -172,6 +173,41 @@ namespace FiresportCalendar.Services
                 return new List<League>();
 
             return team.Leagues.ToList();
+        }
+        
+        public async Task AddUpcomingLeagueRaces(int teamId, int leagueId)
+        {
+            var upcomingLeagueRaces = await _context.Races.Where(r => r.DateTime > DateTime.Today && r.LeagueId == leagueId).ToListAsync();
+
+            var team = await _context.Teams
+                                .Include(t => t.TeamRaces)
+                                    .ThenInclude(tr => tr.Race)
+                                .FirstOrDefaultAsync(t => t.Id == teamId);
+            if (team == null)
+                throw new ArgumentException();
+
+            foreach (var race in upcomingLeagueRaces)
+                if (!team.TeamRaces.Any(tr => tr.RaceId == race.Id))
+                    team.TeamRaces.Add(new TeamRace(teamId: teamId, raceId: race.Id));
+           
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveUpcomingLeagueRaces(int teamId, int leagueId)
+        {
+            var team = await _context.Teams
+                                .Include(t => t.TeamRaces)
+                                    .ThenInclude(tr => tr.Race)
+                                .FirstOrDefaultAsync(t => t.Id == teamId);
+
+            if (team == null)
+                throw new ArgumentException();
+
+            var upcomingLeagueTeamRaces = team.TeamRaces.Where(tr => tr.Race.LeagueId == leagueId).ToList();
+
+            _context.TeamRaces.RemoveRange(upcomingLeagueTeamRaces);
+
+            await _context.SaveChangesAsync();
         }
 
 

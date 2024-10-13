@@ -72,7 +72,11 @@ namespace FiresportCalendar.Controllers
         public async Task<IActionResult> AddLeague(int teamId, int leagueId)
         {
             if (await _teamService.AddLeague(teamId, leagueId))
+            {
+                await _teamService.AddUpcomingLeagueRaces(teamId, leagueId);
+                
                 return RedirectToAction("Edit", new { id = teamId });
+            }
             else
                 return RedirectToAction("Error", "Home");
         }
@@ -81,7 +85,11 @@ namespace FiresportCalendar.Controllers
         public async Task<IActionResult> RemoveLeague(int teamId, int leagueId)
         {
             if (await _teamService.RemoveLeague(teamId, leagueId))
+            {
+                await _teamService.RemoveUpcomingLeagueRaces(teamId: teamId, leagueId: leagueId);
+                
                 return RedirectToAction("Edit", new { id = teamId });
+            }
             else
                 return RedirectToAction("Error", "Home");
         }
@@ -151,6 +159,8 @@ namespace FiresportCalendar.Controllers
             {
                 return NotFound();
             }
+
+            team.TeamRaces = team.TeamRaces.OrderBy(tr => tr.Race.DateTime).ToList();
 
             var model = new TeamEditModel();
             model.Team = team;

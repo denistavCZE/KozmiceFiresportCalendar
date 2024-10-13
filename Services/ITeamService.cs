@@ -16,6 +16,8 @@ namespace FiresportCalendar.Services
         Task<List<Person>> GetMembers(int teamId);
         Task<bool> IsMember(int teamId, string personId);
         Task<List<League>> GetTeamLeagues(int teamId);
+        Task AddUpcomingLeagueRaces(int teamId, int leagueId);
+        Task RemoveUpcomingLeagueRaces(int teamId, int leagueId);
 
 
     }
