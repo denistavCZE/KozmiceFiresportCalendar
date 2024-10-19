@@ -246,7 +246,12 @@ namespace FiresportCalendar.Controllers
         }
         public async Task<IActionResult> Detail (int id)
         {
-            Team team = await _teamService.GetTeamById(id);            
+            Team? team = await _teamService.GetTeamById(id);
+
+            if (team == null)
+                return NotFound();
+            
+            team.TeamRaces = team.TeamRaces.OrderBy(tr => tr.Race.DateTime).ToList();
 
             return View(team);
         }

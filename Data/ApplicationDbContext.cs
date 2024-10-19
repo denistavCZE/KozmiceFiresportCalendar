@@ -35,7 +35,9 @@ namespace FiresportCalendar.Data
             modelBuilder.Entity<Race>()
                 .HasOne(r => r.League)
                 .WithMany(l => l.Races)
-                .HasForeignKey(r => r.LeagueId);
+                .HasForeignKey(r => r.LeagueId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // Team
             modelBuilder.Entity<Team>()
@@ -54,12 +56,15 @@ namespace FiresportCalendar.Data
             modelBuilder.Entity<TeamRace>()
                 .HasOne(tr => tr.Team)
                 .WithMany(t => t.TeamRaces)
-                .HasForeignKey(tr => tr.TeamId);
+                .HasForeignKey(tr => tr.TeamId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
 
             modelBuilder.Entity<TeamRace>()
                 .HasOne(tr => tr.Race)
                 .WithMany(r => r.TeamRaces)
-                .HasForeignKey(tr => tr.RaceId);
+                .HasForeignKey(tr => tr.RaceId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // EventUser
             modelBuilder.Entity<EventPerson>()
@@ -68,12 +73,14 @@ namespace FiresportCalendar.Data
             modelBuilder.Entity<EventPerson>()
                 .HasOne(eu => eu.Event)
                 .WithMany(e => e.EventPeople)
-                .HasForeignKey(eu => eu.EventId);
+                .HasForeignKey(eu => eu.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<EventPerson>()
                 .HasOne(eu => eu.Person)
                 .WithMany(u => u.EventPeople)
-                .HasForeignKey(eu => eu.PersonId);
+                .HasForeignKey(eu => eu.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // TeamRaceUser
             modelBuilder.Entity<TeamRacePerson>()
@@ -82,12 +89,14 @@ namespace FiresportCalendar.Data
             modelBuilder.Entity<TeamRacePerson>()
                 .HasOne(trp => trp.TeamRace)
                 .WithMany(tr => tr.TeamRacePeople)
-                .HasForeignKey(trp => new { trp.TeamId, trp.RaceId });
+                .HasForeignKey(trp => new { trp.TeamId, trp.RaceId })
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TeamRacePerson>()
                 .HasOne(trp => trp.Person)
                 .WithMany(u => u.TeamRacePeople)
-                .HasForeignKey(trp => trp.PersonId);
+                .HasForeignKey(trp => trp.PersonId)
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<TeamRacePerson>()
                 .Property(trp => trp.Position)

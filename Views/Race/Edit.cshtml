@@ -1,0 +1,42 @@
+﻿@model FiresportCalendar.Models.Race
+
+<h2>Editace závodu</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="Place" class="control-label"></label>
+        <input asp-for="Place" class="form-control" />
+        <span asp-validation-for="Place" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateTime" class="control-label"></label>
+        <input asp-for="DateTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="DateTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Timer" class="control-label"></label>
+        <input asp-for="Timer" class="form-check-input" type="checkbox" />
+        <span asp-validation-for="Timer" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LeagueId" class="control-label"></label>
+        <select asp-for="LeagueId" class="form-control" asp-items="@(new SelectList(ViewBag.Leagues, "Id", "Name"))">
+            <option value="">-- Select League --</option>
+        </select>
+        <span asp-validation-for="LeagueId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-2">
+        <input type="submit" value="Uložit" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Zrušit</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

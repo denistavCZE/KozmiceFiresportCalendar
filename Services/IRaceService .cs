@@ -1,4 +1,5 @@
 ﻿using FiresportCalendar.Models;
+using System.Diagnostics;
 
 namespace FiresportCalendar.Services
 {
@@ -10,6 +11,8 @@ namespace FiresportCalendar.Services
         Task<Race?> GetRaceById(int raceId);
         Task<List<Race>> GetRacesByTeamId(int teamId);    
         Task<List<Race>> GetTimerRaces();
+        Task UpdateRaceAsync(Race race);
+        Task DeleteByIdAsync(int id);
 
     }
 }

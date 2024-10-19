@@ -1,0 +1,64 @@
+﻿@model List<Race>
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    @foreach (var race in Model)
+    {
+        <div id="@race.Id" class="row">
+            <div class="col-9 mt-3">
+                @switch (race.League?.Name)
+                {
+                    case "OL":
+                        <div class="border-bottom rounded-3 text-white ol">
+                            <h4 class="ms-2 pt-1">
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @if (race.Timer)
+                                {
+                                    <text> + Časomír</text>
+                                }
+                            </h4>
+                        </div>
+                        break;
+                    case "NHHL":
+                        <div class="border-bottom rounded-3 text-white nocni">
+                            <h4 class ="ms-2 pt-1">
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @if (race.Timer)
+                                {
+                                    <text> + Časomír</text>
+                                }
+                            </h4>
+                        </div>
+                        break;
+                    case "MSP":
+                        <div class="border-bottom rounded-3 text-white msp">
+                            <h4 class="ms-2 pt-1">
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @if (race.Timer)
+                                {
+                                    <text> + Časomír</text>
+                                }
+                            </h4>
+                        </div>
+                        break;
+                    default:
+                        <div class="border-bottom rounded-3 text-white" style="background-color: deeppink">
+                            <h4 class="ms-2 pt-1">@race.DateTime.ToString("d.M. - HH:mm") @race.Place</h4>
+                        </div>
+                        break;
+                }
+            </div>
+            <div class="col-1 mt-3" >
+                <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Race", new {id = race.Id})'">Upravit</button>
+            </div>
+            <div class="col-1 mt-3">
+                <form asp-action="Delete" asp-controller="Race" method="post" onsubmit="return confirm('Opravdu chcete tento závod smazat?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@race.Id" />
+                    <button type="submit" class="mt-1 btn-sm btn-danger">Odstranit</button>
+                </form>
+            </div>
+
+        </div>
+    }
+}
+
