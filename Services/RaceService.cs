@@ -58,5 +58,12 @@ namespace FiresportCalendar.Services
 
             await _context.SaveChangesAsync();
         }
+        
+        public async Task AddRaceAsync(Race race)
+        {
+            _context.Races.Add(race);
+            await _context.SaveChangesAsync();
+
+        }
     }
 }

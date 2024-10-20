@@ -1,10 +1,15 @@
 ﻿@model List<Race>
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
+    <div class="row">
+        <div class="col-1" style="margin-top: 10px">
+            <button class="mt-1 btn-sm btn-success" onclick="location.href='@Url.Action("Create", "Race")'">Přidat</button>
+        </div>
+    </div>
     @foreach (var race in Model)
     {
         <div id="@race.Id" class="row">
-            <div class="col-9 mt-3">
+            <div class="col-8 mt-3">
                 @switch (race.League?.Name)
                 {
                     case "OL":
@@ -47,17 +52,18 @@
                         break;
                 }
             </div>
-            <div class="col-1 mt-3" >
-                <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Race", new {id = race.Id})'">Upravit</button>
+            <div class="container row col-4 mt-3">
+                <div class="col-5" >
+                    <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Race", new {id = race.Id})'">Upravit</button>
+                </div>
+                <div class="col-5">
+                    <form asp-action="Delete" asp-controller="Race" method="post" onsubmit="return confirm('Opravdu chcete tento závod smazat?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@race.Id" />
+                        <button type="submit" class="mt-1 btn-sm btn-danger">Odstranit</button>
+                    </form>
+                </div>
             </div>
-            <div class="col-1 mt-3">
-                <form asp-action="Delete" asp-controller="Race" method="post" onsubmit="return confirm('Opravdu chcete tento závod smazat?');">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@race.Id" />
-                    <button type="submit" class="mt-1 btn-sm btn-danger">Odstranit</button>
-                </form>
-            </div>
-
         </div>
     }
 }

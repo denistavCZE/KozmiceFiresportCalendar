@@ -13,6 +13,7 @@ namespace FiresportCalendar.Services
         Task<List<Race>> GetTimerRaces();
         Task UpdateRaceAsync(Race race);
         Task DeleteByIdAsync(int id);
+        Task AddRaceAsync(Race race);
 
     }
 }

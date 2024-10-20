@@ -60,8 +60,9 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Races/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Leagues = await _leagueService.GetAllLeagues();
             return View();
         }
 
@@ -70,12 +71,11 @@ namespace FiresportCalendar.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Race race)
+        public async Task<IActionResult> Create(Race race)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(race);
-                await _context.SaveChangesAsync();
+                await _raceService.AddRaceAsync(race);
                 return RedirectToAction(nameof(Index));
             }
             return View(race);
