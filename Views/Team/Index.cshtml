@@ -4,9 +4,9 @@
     foreach (var team in Model)
     {
         <div class="row">
-            <div class="col-10">
-                <div id="@team.Id" class="text-left race mb-4">
-                    <div class="border-bottom rounded-3" style="background-color: yellow;">
+            <div class="col-8 mt-3">
+                <div id="@team.Id" class="text-left">
+                    <div class="border-bottom rounded-3" style="background-color: @((team.Active)?"Yellow":"Gray");">
                         <h4 class="ms-2 pt-1">
                             @team.Name - @((team.Active)?"Aktivní":"Neaktivní")
                         </h4>    
@@ -16,8 +16,20 @@
                     </div> *@
                 </div>
             </div>
-            <div class="col-1" style="margin-top: 10px">
+           @*  <div class="col-5" style="margin-top: 10px">
                 <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Team", new {id = team.Id})'">Upravit</button>
+            </div> *@
+            <div class="container row col-4 mt-3">
+                <div class="col-5">
+                    <button class="btn-sm btn-warning mt-1" onclick="location.href='@Url.Action("Edit", "Team", new {id = team.Id})'">Upravit</button>
+                </div>
+                <div class="col-5">
+                    <form asp-action="ToggleActive" asp-controller="Team" method="post" onsubmit="return confirm('Opravdu chcete tento tým @((team.Active) ? "deaktivovat" : "aktivovat")?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@team.Id" />
+                        <button type="submit" class="mt-1 btn-sm btn-@((team.Active) ? "danger" : "success")"> @((team.Active) ? "Deaktivovat" : "Aktivovat")</button>
+                    </form>
+                </div>
             </div>
         </div>
     }

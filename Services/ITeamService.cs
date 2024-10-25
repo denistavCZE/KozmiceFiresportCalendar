@@ -18,7 +18,7 @@ namespace FiresportCalendar.Services
         Task<List<League>> GetTeamLeagues(int teamId);
         Task AddUpcomingLeagueRaces(int teamId, int leagueId);
         Task RemoveUpcomingLeagueRaces(int teamId, int leagueId);
-
+        Task ToggleActive(int teamId);
 
     }
 }

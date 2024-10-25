@@ -30,12 +30,12 @@ namespace FiresportCalendar.Services
         }
         public async Task<List<Team>> GetTeams()
         {
-            return await _context.Teams.ToListAsync();
+            return await _context.Teams.OrderBy(t => !t.Active).ThenBy(t => t.Name).ToListAsync();
  
         }
         public async Task<List<Team>> GetActiveTeams()
         {
-            return await _context.Teams.Where(t => t.Active).ToListAsync();
+            return await _context.Teams.Where(t => t.Active).OrderBy(t => t.Name).ToListAsync();
         }
 
         public async Task<bool> AddMember(int teamId, string personId)
@@ -208,6 +208,17 @@ namespace FiresportCalendar.Services
             _context.TeamRaces.RemoveRange(upcomingLeagueTeamRaces);
 
             await _context.SaveChangesAsync();
+        }
+        public async Task ToggleActive(int teamId)
+        {
+            var team = await _context.Teams.FindAsync(teamId);
+
+            if (team == null)
+                return;
+
+            team.Active = !team.Active;
+
+            _context.SaveChanges();
         }
 
 
