@@ -18,7 +18,6 @@ namespace FiresportCalendar
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            builder.Services.AddTransient<IEmailSender, EmailService>();
 
             builder.Services.AddDefaultIdentity<Person>(options => {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -35,6 +34,8 @@ namespace FiresportCalendar
             builder.Services.AddControllersWithViews();
 
             #region Services
+            builder.Services.AddTransient<IEmailSender, EmailService>();
+            builder.Services.AddHttpClient<ReCaptchaService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<IRaceService, RaceService>();
             builder.Services.AddScoped<IEventService, EventService>();
