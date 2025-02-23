@@ -2,6 +2,7 @@ using FiresportCalendar.Data;
 using FiresportCalendar.Models;
 using FiresportCalendar.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FiresportCalendar
@@ -16,6 +17,8 @@ namespace FiresportCalendar
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            builder.Services.AddTransient<IEmailSender, EmailService>();
 
             builder.Services.AddDefaultIdentity<Person>(options => {
                 options.SignIn.RequireConfirmedAccount = false;
