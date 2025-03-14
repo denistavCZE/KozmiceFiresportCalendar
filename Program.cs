@@ -34,6 +34,7 @@ namespace FiresportCalendar
             builder.Services.AddControllersWithViews();
 
             #region Services
+            builder.Services.AddMemoryCache();
             builder.Services.AddTransient<IEmailSender, EmailService>();
             builder.Services.AddHttpClient<ReCaptchaService>();
             builder.Services.AddScoped<ITeamService, TeamService>();
