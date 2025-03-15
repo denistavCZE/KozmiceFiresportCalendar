@@ -48,6 +48,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
+            [Display(Name = "Heslo")]
             public string Password { get; set; }
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Caching.Memory;
+using FiresportCalendar.Exceptions;
 namespace FiresportCalendar.Services
 {
     public class EmailService : IEmailSender
@@ -29,9 +30,9 @@ namespace FiresportCalendar.Services
                 _cache.Set("EmailCount", 0);
                 _cache.Set("LastEmailDate", DateTime.UtcNow.Date);
             }
-           
-            if(emailCountToday < _dailyEmailLimit)
-            { 
+
+            if (emailCountToday < _dailyEmailLimit)
+            {
                 _cache.Set("EmailCount", emailCountToday + 1);
 
                 var emailClient = new EmailClient(_connectionString);
@@ -50,6 +51,7 @@ namespace FiresportCalendar.Services
                     WaitUntil.Completed,
                     emailMessage);
             }
+            else throw new DailyEmailLimitException();
         }
     }
 }

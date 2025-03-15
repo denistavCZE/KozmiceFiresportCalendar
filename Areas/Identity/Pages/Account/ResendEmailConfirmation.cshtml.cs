@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using FiresportCalendar.Exceptions;
 
 namespace FiresportCalendar.Areas.Identity.Pages.Account
 {
@@ -77,12 +78,17 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+            try { 
+                await _emailSender.SendEmailAsync(
+                    Input.Email,
+                    "Confirm your email",
+                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+            }
+            catch (DailyEmailLimitException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
             return Page();
         }
     }

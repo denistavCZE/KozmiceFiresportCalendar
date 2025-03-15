@@ -55,7 +55,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             /// </summary>
             [Required]
             [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
+            [Display(Name = "Souèasné heslo")]
             public string OldPassword { get; set; }
 
             /// <summary>
@@ -65,7 +65,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [Display(Name = "Nové heslo")]
             public string NewPassword { get; set; }
 
             /// <summary>
@@ -73,8 +73,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [Display(Name = "Potvrïte nové heslo")]
+            [Compare("NewPassword", ErrorMessage = "Hesla se neshodují.")]
             public string ConfirmPassword { get; set; }
         }
 
