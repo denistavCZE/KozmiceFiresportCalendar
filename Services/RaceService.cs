@@ -36,7 +36,7 @@ namespace FiresportCalendar.Services
         }
         public async Task<List<Race>> GetTimerRaces()
         {
-            var res = await _context.Races.Where(r => r.Timer).OrderBy(r => r.DateTime).ToListAsync();
+            var res = await _context.Races.Where(r => r.Timer && r.DateTime > DateTime.Today).OrderBy(r => r.DateTime).ToListAsync();
             return res;
         }
         public async Task UpdateRaceAsync(Race race)
