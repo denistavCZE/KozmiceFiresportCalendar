@@ -31,13 +31,19 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<Person> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ReCaptchaService _reCaptchaService;
+        private readonly IConfiguration _configuration;
+
+        public string ReCaptchaSiteKey { get; set; }
 
         public RegisterModel(
             UserManager<Person> userManager,
             IUserStore<Person> userStore,
             SignInManager<Person> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ReCaptchaService reCaptchaService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -45,6 +51,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _reCaptchaService = reCaptchaService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -54,6 +62,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        [BindProperty]
+        public string RecaptchaToken { get; set; }
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -97,7 +107,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Potvrdit heslo")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "Hesla se neshodují.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -106,6 +116,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ReCaptchaSiteKey = _configuration["ReCaptcha:SiteKey"];
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -114,6 +125,12 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                if (!await _reCaptchaService.IsCaptchaValid(RecaptchaToken))
+                {
+                    ModelState.AddModelError("", "ReCAPTCHA selhala. Zkuste to prosím znovu");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

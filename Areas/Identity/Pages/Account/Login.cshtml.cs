@@ -22,11 +22,17 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<Person> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly ReCaptchaService _reCaptchaService;
+        private readonly IConfiguration _configuration;
 
-        public LoginModel(SignInManager<Person> signInManager, ILogger<LoginModel> logger)
+        public string ReCaptchaSiteKey { get; set; }
+
+        public LoginModel(SignInManager<Person> signInManager, ILogger<LoginModel> logger, ReCaptchaService reCaptchaService, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _reCaptchaService = reCaptchaService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -36,6 +42,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        [BindProperty]
+        public string RecaptchaToken { get; set; }
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -92,6 +100,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
+            ReCaptchaSiteKey = _configuration["ReCaptcha:SiteKey"];
+
             returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
@@ -110,6 +120,12 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                if (!await _reCaptchaService.IsCaptchaValid(RecaptchaToken))
+                {
+                    ModelState.AddModelError("", "ReCAPTCHA selhala. Zkuste to prosím znovu");
+                    return Page();
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);

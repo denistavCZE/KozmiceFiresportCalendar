@@ -29,6 +29,9 @@
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
                 </div>
+
+                <input type="hidden" id="recaptchaToken" name="recaptchaToken" />
+
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Přihlásit se</button>
                 </div>
@@ -39,9 +42,9 @@
                     <p>
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Zaregistrovat se</a>
                     </p>
-                    <p>
+                    @* <p>
                         <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Zaslání potvrzení emailu</a>
-                    </p>
+                    </p> *@
                 </div>
             </form>
         </section>
@@ -80,4 +83,21 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://www.google.com/recaptcha/api.js?render=@Model.ReCaptchaSiteKey"></script>
+
+    <script>
+        grecaptcha.ready(function() {
+            document.getElementById("account").onsubmit = function(event) {
+                event.preventDefault(); 
+
+                grecaptcha.execute('@Model.ReCaptchaSiteKey', { action: 'login' }).then(function(token) {
+                    
+                    document.getElementById("recaptchaToken").value = token;
+
+                    document.getElementById("account").submit();
+                });
+            };
+        });
+    </script>
+
 }

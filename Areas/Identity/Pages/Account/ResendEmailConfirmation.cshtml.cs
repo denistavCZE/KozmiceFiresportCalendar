@@ -58,6 +58,11 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
+
+            ModelState.AddModelError(string.Empty, "Oveøování emailù je nyní vypnuto.");
+            return Page();
+
+
             if (!ModelState.IsValid)
             {
                 return Page();
