@@ -1,0 +1,45 @@
+﻿@model IEnumerable<UserRoleViewModel>
+
+@{
+    ViewData["Title"] = "Správa rolí";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Správa rolí</h2>
+
+    @foreach (var user in Model)
+    {
+        <div class="row mb-3">
+            <div class="col-3">
+                <strong>@user.UserName</strong>
+                <br>
+                <small>@user.Email</small>
+            </div>
+
+            <div class="col-9">
+                @foreach (var role in user.AllRoles)
+                {
+                    var hasRole = user.UserRoles.Contains(role);
+
+                    @if (user.UserName != User.Identity.Name && user.Email != ViewData["SuperAdminEmail"] as string)
+                    {
+                        <form method="post" action="@Url.Action("ToggleRole", "ManageRoles")" style="display:inline;">
+                            <input type="hidden" name="userName" value="@user.UserName" />
+                            <input type="hidden" name="roleName" value="@role" />
+                            <button type="submit" class="btn @(hasRole ? "btn-primary" : "btn-outline-primary") btn-sm mx-1">
+                                @role
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- Pro uživatele, který je aktuálně přihlášen, nebude možnost měnit role -->
+                        <button class="btn btn-secondary btn-sm mx-1" disabled>
+                            @role
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>

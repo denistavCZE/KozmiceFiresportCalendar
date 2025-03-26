@@ -60,6 +60,10 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Telefonní èíslo")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [Display(Name = "Jméno")]
+            public string Username { get; set; }
         }
 
         private async Task LoadAsync(Person user)
@@ -71,7 +75,8 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Username = userName
             };
         }
 
@@ -92,7 +97,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Nepodaøilo se naèíst uživatele s ID '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -101,19 +106,31 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
+            var username = await _userManager.GetUserNameAsync(user);
+            if (Input.Username != username)
+            {
+                var setUsernameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                if (!setUsernameResult.Succeeded)
+                {
+                    StatusMessage = "Nepodaøilo se zmìnit jméno.";
+                    return RedirectToPage();
+                }
+            }
+
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Nepodaøilo se zmìnit telefonní èíslo";
                     return RedirectToPage();
                 }
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Váš profil byl aktualizován";
             return RedirectToPage();
         }
     }

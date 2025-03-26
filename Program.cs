@@ -20,16 +20,18 @@ namespace FiresportCalendar
 
 
             builder.Services.AddDefaultIdentity<Person>(options => {
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false; 
                 options.Password.RequireUppercase = false;  
                 options.Password.RequireNonAlphanumeric = false;  
                 options.Password.RequiredLength = 1;  
-                options.Password.RequiredUniqueChars = 0;  
-
+                options.Password.RequiredUniqueChars = 0;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ·ËÔÈÏÌÚÛ¯öù˙˘˝û¡»œ…ÃÕ“”ÿäç⁄Ÿ›é";
+                options.User.RequireUniqueEmail = true; 
             })
                 .AddRoles<IdentityRole>()
+
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
