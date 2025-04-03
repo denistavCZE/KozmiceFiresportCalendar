@@ -116,6 +116,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
+            ReCaptchaSiteKey = _configuration["ReCaptcha:SiteKey"];
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
