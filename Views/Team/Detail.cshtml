@@ -176,7 +176,7 @@
         }
         if (positionId != 0) {
             var newInput = document.getElementById(raceId + "-" + positionId);
-            newInput.value = "@User.Identity.Name";
+            newInput.value = "@Html.Raw(User.Identity.Name)";
         }
 
         // Switch buttons
