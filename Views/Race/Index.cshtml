@@ -15,7 +15,7 @@
                     case "OL":
                         <div class="border-bottom rounded-3 text-white ol">
                             <h4 class="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
                                 @if (race.Timer)
                                 {
                                     <text> + Časomír</text>
@@ -26,7 +26,7 @@
                     case "NHHL":
                         <div class="border-bottom rounded-3 text-white nocni">
                             <h4 class ="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
                                 @if (race.Timer)
                                 {
                                     <text> + Časomír</text>
@@ -37,7 +37,7 @@
                     case "MSP":
                         <div class="border-bottom rounded-3 text-white msp">
                             <h4 class="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.Place
+                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
                                 @if (race.Timer)
                                 {
                                     <text> + Časomír</text>
