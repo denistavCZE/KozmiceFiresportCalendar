@@ -66,14 +66,14 @@ namespace FiresportCalendar.Services
 
             return await _context.TeamRaces.Where(r => r.Team.Id == teamId).ToListAsync();
         }
-        public async Task SetTeamRacePerson(int teamId, int raceId, int positionId, string personId)
+        public async Task<bool> SetTeamRacePerson(int teamId, int raceId, int positionId, string personId)
         {
         
             var oldPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.Position == positionId).FirstOrDefaultAsync();
-            var thisPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.PersonId == personId).FirstOrDefaultAsync();
 
             if (oldPerson != null)
-                _context.TeamRacePeople.Remove(oldPerson);
+                return false;
+            var thisPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.PersonId == personId).FirstOrDefaultAsync();
 
             if (thisPerson != null)
                 _context.TeamRacePeople.Remove(thisPerson);
@@ -82,7 +82,8 @@ namespace FiresportCalendar.Services
             await _context.TeamRacePeople.AddAsync(newPerson);
 
             await _context.SaveChangesAsync();
-   
+
+            return true;
         }
         public async Task UnsetTeamRacePerson(int teamId, int raceId, int positionId, string personId)
         {

@@ -108,7 +108,7 @@
                                             <i class="fa fa-lg fa-times"></i>
                                         </button>
                                     }
-                                    else
+                                    else if (String.IsNullOrEmpty(assignedUsername))
                                     {
                                         <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
                                             <i class="fa fa-check" aria-hidden="true"></i>
@@ -181,7 +181,8 @@
                 SetPersonToInput(raceId, positionId);
             },
             error: function (xhr, status, error) {
-                alert('Nastala chyba při odesílání dat: ' + error);
+                let errorMessage = xhr.responseText || 'Nastala chyba při potvrzování pozice.';
+                alert(errorMessage);
             }
         });
     };

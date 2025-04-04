@@ -268,11 +268,20 @@ namespace FiresportCalendar.Controllers
         }
 
         [HttpPost]
-        public async Task ConfirmRace(int teamId, int raceId, int positionId)
+        public async Task<IActionResult> ConfirmRace(int teamId, int raceId, int positionId)
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (personId != null && await _teamService.IsMember(teamId, personId)) 
-                await _teamRaceService.SetTeamRacePerson(teamId, raceId, positionId, personId);
+            try
+            {
+                if (personId != null && await _teamService.IsMember(teamId, personId))
+                    if (!await _teamRaceService.SetTeamRacePerson(teamId, raceId, positionId, personId))
+                        return BadRequest("Tuto pozici už potvrdil někdo jiný.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Došlo k chybě na serveru.\nZkuste akci opakovat, případně se obraťte na administrátora.");
+            }
+            return Ok();
         }
         [HttpPost]
         public async Task DeclineRace(int teamId, int raceId, int positionId)
