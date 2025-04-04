@@ -3,9 +3,48 @@
     ViewData["Title"] = "Závody";
 }
 
+<div class="mt-2 mb-4">
+    @{
+        var usedLeagues = Model.TeamRaces
+        .Where(r => r.Race?.League != null)
+        .Select(r => r.Race.League)
+        .Distinct()
+        .ToList();
+
+        var hasNoLeague = Model.TeamRaces.Any(r => r.Race?.League == null);
+    }
+    @foreach (var league in usedLeagues)
+    {
+        
+        var leagueClass = league.Name switch
+        {
+            "OL" => "ol",
+            "NHHL" => "nocni",
+            "MSP" => "msp",
+            _ => ""
+        };
+
+
+        <div class="form-check form-check-inline">
+            <input class="form-check-input league-filter" type="checkbox" value="@league.Name" id="filter-@league.Name" checked />
+            <label class="form-check-label fw-bold text-white px-2 rounded @leagueClass" for="filter-@league.Name">
+                @league.Name
+            </label>
+        </div>
+    }
+    @if (hasNoLeague)
+    {
+        <div class="form-check form-check-inline">
+            <input class="form-check-input league-filter" type="checkbox" value="ostatni" id="filter-ostatni" checked />
+            <label class="form-check-label fw-bold text-white px-2 rounded" style="background-color: deeppink;" for="filter-ostatni">
+                Jiné
+            </label>
+        </div>
+    }
+</div>
 @foreach (var race in Model.TeamRaces)
 {
-    <div id="@race.RaceId" class="text-left race">
+    <div id="@race.RaceId" class="text-left race" data-league="@(race.Race.League?.Name ?? "ostatni")">
         @switch(race.Race.League?.Name)
         {
         case "OL":
@@ -196,4 +235,16 @@
             button2.classList.remove("d-none");
         }
     }
+
+    document.querySelectorAll('.league-filter').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            var leagueName = this.value;
+            var show = this.checked;
+
+            document.querySelectorAll(`.race[data-league='${leagueName}']`).forEach(function (raceDiv) {
+                raceDiv.style.display = show ? '' : 'none';
+            });
+        });
+    });
+
 </script>
