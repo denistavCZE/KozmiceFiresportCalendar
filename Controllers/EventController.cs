@@ -35,7 +35,7 @@ namespace FiresportCalendar.Controllers
             _userManager = userManager;
         }
 
-        // GET: Teams
+        // GET: Events
         public async Task<IActionResult> Index()
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -46,7 +46,7 @@ namespace FiresportCalendar.Controllers
             return View(await _eventService.GetEvents());
         }
 
-        // GET: Teams/Detail/5
+        // GET: Events/Detail/5
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -75,18 +75,18 @@ namespace FiresportCalendar.Controllers
             return View(model);
         }
 
-        // GET: Teams/Create
+        // GET: Events/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Teams/Create
+        // POST: Events/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Event @event)
+        public async Task<IActionResult> Create(Event @event)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace FiresportCalendar.Controllers
             return View(@event);
         }
 
-        // GET: Teams/Edit/5
+        // GET: Events/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -105,7 +105,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Teams.FindAsync(id);
+            var @event = await _context.Events.FindAsync(id);
             if (@event == null)
             {
                 return NotFound();
@@ -113,12 +113,12 @@ namespace FiresportCalendar.Controllers
             return View(@event);
         }
 
-        // POST: Teams/Edit/5
+        // POST: Events/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Event @event)
+        public async Task<IActionResult> Edit(int id, Event @event)
         {
             if (id != @event.Id)
             {
@@ -148,7 +148,7 @@ namespace FiresportCalendar.Controllers
             return View(@event);
         }
 
-        // GET: Teams/Delete/5
+        // GET: Events/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -166,7 +166,7 @@ namespace FiresportCalendar.Controllers
             return View(@event);
         }
 
-        // POST: Teams/Delete/5
+        // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

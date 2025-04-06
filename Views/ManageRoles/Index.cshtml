@@ -1,75 +1,77 @@
 ﻿@model IEnumerable<UserRoleViewModel>
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+   
+        ViewData["Title"] = "Správa rolí";
+    
 
-@{
-    ViewData["Title"] = "Správa rolí";
-}
-
-<div class="container mt-2">
-    @if (TempData["StatusMessage"] != null)
-    {
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            @TempData["StatusMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-    <h2 class="mb-4">Správa rolí</h2>
-
-    @foreach (var user in Model.Where(u => u.EmailConfirmed))
-    {
-        <div class="row mb-3">
-            <div class="col-3">
-                <strong>@user.UserName</strong>
-                <br>
-                <small>@user.Email</small>
+    <div class="container mt-2">
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                @TempData["StatusMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+        }
+        <h2 class="mb-4">Správa rolí</h2>
 
-            <div class="col-9">
-                @foreach (var role in ViewBag.AllRoles)
-                {
-                    var hasRole = user.UserRoles.Contains(role);
+        @foreach (var user in Model.Where(u => u.EmailConfirmed))
+        {
+            <div class="row mb-3">
+                <div class="col-3">
+                    <strong>@user.UserName</strong>
+                    <br>
+                    <small>@user.Email</small>
+                </div>
 
-                    @if (user.UserName != User.Identity.Name && user.Email != ViewData["SuperAdminEmail"] as string)
+                <div class="col-9">
+                    @foreach (var role in ViewBag.AllRoles)
                     {
-                        <form method="post" action="@Url.Action("ToggleRole", "ManageRoles")" style="display:inline;">
-                            <input type="hidden" name="userId" value="@user.Id" />
-                            <input type="hidden" name="roleName" value="@role" />
-                            <button type="submit" class="btn @(hasRole ? "btn-primary" : "btn-outline-primary") btn-sm mx-1">
+                        var hasRole = user.UserRoles.Contains(role);
+
+                        @if (user.UserName != User.Identity.Name && user.Email != ViewData["SuperAdminEmail"] as string)
+                        {
+                            <form method="post" action="@Url.Action("ToggleRole", "ManageRoles")" style="display:inline;">
+                                <input type="hidden" name="userId" value="@user.Id" />
+                                <input type="hidden" name="roleName" value="@role" />
+                                <button type="submit" class="btn @(hasRole ? "btn-primary" : "btn-outline-primary") btn-sm mx-1">
+                                    @role
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <!-- Pro uživatele, který je aktuálně přihlášen, nebude možnost měnit role -->
+                            <button class="btn btn-secondary btn-sm mx-1" disabled>
                                 @role
                             </button>
-                        </form>
+                        }
                     }
-                    else
-                    {
-                        <!-- Pro uživatele, který je aktuálně přihlášen, nebude možnost měnit role -->
-                        <button class="btn btn-secondary btn-sm mx-1" disabled>
-                            @role
-                        </button>
-                    }
-                }
+                </div>
             </div>
-        </div>
-    }
+        }
 
-    <h2 class="mt-4 mb-4">Nepotvrzení uživatelé</h2>
+        <h2 class="mt-4 mb-4">Nepotvrzení uživatelé</h2>
 
-    @foreach (var user in Model.Where(u => !u.EmailConfirmed))
-    {
-        <div class="row mb-3">
-            <div class="col-3">
-                <strong>@user.UserName</strong>
-                <br>
-                <small>@user.Email</small>
-            </div>
+        @foreach (var user in Model.Where(u => !u.EmailConfirmed))
+        {
+            <div class="row mb-3">
+                <div class="col-3">
+                    <strong>@user.UserName</strong>
+                    <br>
+                    <small>@user.Email</small>
+                </div>
 
-            <div class="col-9">
+                <div class="col-9">
                
-                <form method="post" action="@Url.Action("ConfirmUser", "ManageRoles")" style="display:inline;">
-                    <input type="hidden" name="userId" value="@user.Id" />
-                    <button type="submit" class="btn btn-outline-primary btn-sm mx-1">
-                        Potvrdit
-                    </button>
-                </form>
+                    <form method="post" action="@Url.Action("ConfirmUser", "ManageRoles")" style="display:inline;">
+                        <input type="hidden" name="userId" value="@user.Id" />
+                        <button type="submit" class="btn btn-outline-primary btn-sm mx-1">
+                            Potvrdit
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}

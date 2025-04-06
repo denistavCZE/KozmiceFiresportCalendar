@@ -4,21 +4,37 @@
 }
 <div class="text-left race mb-4 " style="min-height: 200px">
 
-    <div class="col-12 border-bottom border-3">
-        <h1 style="margin-left: 20px;">@Model.Event.Name</h1>
+    <div class="col-12 border-bottom border-3"> 
+        <div class="container row col-12 mt-3">
+            <div class="col-10">
+                <h1>@Model.Event.Name</h1>
+            </div>
+            <div class="col-1">
+                <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "Event", new {id = Model.Event.Id})'">Upravit</button>
+            </div>
+            <div class="col-1">
+                <form asp-action="Delete" asp-controller="Event" method="post" onsubmit="return confirm('Opravdu chcete tuto akci smazat?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Event.Id" />
+                    <button type="submit" class="mt-1 btn-sm btn-danger">Odstranit</button>
+                </form>
+            </div>
+        </div>
         <h2 style="margin-left: 20px;">@Model.Event.Place</h2>
         <h3 style="margin-left: 20px;">@Model.Event.DateTime.ToString("d.M. - HH:mm")</h3>
     </div>
-    @if(Model.People.Count == 0)
-    {
-        <h4 class="ms-2 pt-1">
-            K této akci zatím nikdo nepotvrdil účast...
-        </h4>
-    }
-    @foreach (var person in Model.People)
-    {
-        <h4 class="ms-2 pt-1">
-            @person
-        </h4>
-    }
+    <div class="col-12 ">
+        @if(Model.People.Count == 0)
+        {
+            <h4 class="ms-4 pt-1">
+                K této akci zatím nikdo nepotvrdil účast...
+            </h4>
+        }
+        @foreach (var person in Model.People)
+        {
+            <h4 class="ms-4 pt-1">
+                @person
+            </h4>
+        }
+    </div>
 </div>

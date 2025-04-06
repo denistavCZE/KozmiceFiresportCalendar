@@ -2,9 +2,17 @@
 @{
     ViewData["Title"] = "Akce";
 }
-
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <div class="row">
+        <div class="col-1">
+            <button class="btn-sm btn-success mt-1" onclick="location.href='@Url.Action("Create", "Event")'">Přidat</button>
+        </div>
+    </div>
+}
 @foreach (var ev in Model)
 {
+
     <div class="row">
         <div class="col-1" style="margin-top: 10px;">
             @if (ViewBag.ConfirmedEvents.Contains(ev.Id))
