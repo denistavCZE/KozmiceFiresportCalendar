@@ -66,13 +66,16 @@ namespace FiresportCalendar.Services
 
             return await _context.TeamRaces.Where(r => r.Team.Id == teamId).ToListAsync();
         }
-        public async Task<bool> SetTeamRacePerson(int teamId, int raceId, int positionId, string personId)
+        public async Task<bool> AddTeamRacePerson(int teamId, int raceId, int positionId, string personId)
         {
-        
-            var oldPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.Position == positionId).FirstOrDefaultAsync();
+            if (positionId != -1) // Celkovou neúčast může mít více lidí
+            {
+                var oldPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.Position == positionId).FirstOrDefaultAsync();
 
-            if (oldPerson != null)
-                return false;
+                if (oldPerson != null)
+                    return false;
+            }
+
             var thisPerson = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.PersonId == personId).FirstOrDefaultAsync();
 
             if (thisPerson != null)
@@ -85,7 +88,7 @@ namespace FiresportCalendar.Services
 
             return true;
         }
-        public async Task UnsetTeamRacePerson(int teamId, int raceId, int positionId, string personId)
+        public async Task RemoveTeamRacePerson(int teamId, int raceId, int positionId, string personId)
         {
           
             var person = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.Position == positionId).FirstOrDefaultAsync();

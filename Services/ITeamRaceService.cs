@@ -13,8 +13,8 @@ namespace FiresportCalendar.Services
 
         Task<List<TeamRacePerson>> GetTeamRacePeople(int raceId, int teamId);
         Task<List<TeamRace>> SetTeamRacePeople(int teamId, int raceId, string kos, string spoj, string stroj, string becka, string rozdel, string lp, string pp);
-        Task<bool> SetTeamRacePerson(int teamId, int raceId, int positionId, string personId);
-        Task UnsetTeamRacePerson(int teamId, int raceId, int positionId, string personId);
+        Task<bool> AddTeamRacePerson(int teamId, int raceId, int positionId, string personId);
+        Task RemoveTeamRacePerson(int teamId, int raceId, int positionId, string personId);
 
     }
 }

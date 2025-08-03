@@ -274,7 +274,7 @@ namespace FiresportCalendar.Controllers
             try
             {
                 if (personId != null && await _teamService.IsMember(teamId, personId))
-                    if (!await _teamRaceService.SetTeamRacePerson(teamId, raceId, positionId, personId))
+                    if (!await _teamRaceService.AddTeamRacePerson(teamId, raceId, positionId, personId))
                         return BadRequest("Tuto pozici už potvrdil někdo jiný.");
             }
             catch (Exception ex)
@@ -288,7 +288,7 @@ namespace FiresportCalendar.Controllers
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (personId != null && await _teamService.IsMember(teamId, personId))
-                await _teamRaceService.UnsetTeamRacePerson(teamId, raceId, positionId, personId);
+                await _teamRaceService.RemoveTeamRacePerson(teamId, raceId, positionId, personId);
         }
 
         public async Task<IActionResult> TimerRaces()

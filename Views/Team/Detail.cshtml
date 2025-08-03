@@ -15,7 +15,7 @@
     }
     @foreach (var league in usedLeagues)
     {
-        
+
         var leagueClass = league.Name switch
         {
             "OL" => "ol",
@@ -47,18 +47,18 @@
     <div id="@race.RaceId" class="text-left race" data-league="@(race.Race.League?.Name ?? "ostatni")">
         @switch(race.Race.League?.Name)
         {
-        case "OL":
-            <div class="border-bottom header text-white ol">
+            case "OL":
+                <div class="border-bottom header text-white ol">
                     <h4 style="font-weight: 500;">
                         @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
                         @if(race.Race.Timer){
                             <text> + Časomír</text> 
                         }
                     </h4>
-            </div>
-            break; 
-        case "NHHL":
-            <div class="border-bottom header text-white nocni">
+                </div>
+                break; 
+            case "NHHL":
+                <div class="border-bottom header text-white nocni">
                     <h4 style="font-weight: 500;">
                         @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
                         @if (race.Race.Timer)
@@ -66,10 +66,10 @@
                             <text> + Časomír</text>
                         }
                     </h4>
-            </div>
-            break;
-        case "MSP":
-            <div class="border-bottom header text-white msp">
+                </div>
+                break;
+            case "MSP":
+                <div class="border-bottom header text-white msp">
                     <h4 style="font-weight: 500;">
                         @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
                         @if (race.Race.Timer)
@@ -77,13 +77,13 @@
                             <text> + Časomír</text>
                         }
                     </h4>
-            </div>
-            break;
-        default:
-            <div class="border-bottom header text-white" style="background-color: deeppink">
+                </div>
+                break;
+            default:
+                <div class="border-bottom header text-white" style="background-color: deeppink">
                     <h4 style="font-weight: 500;">@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
-            </div>
-            break;
+                </div>
+                break;
         }
 
         <div class="container d-flex">
@@ -91,7 +91,7 @@
                 <div class="col-sm-6 pe-1">
                     @for(int position = 1 ; position < 4 ; position++)
                     {
-                        
+
                         string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
 
                         <div class="row mb-3">
@@ -126,6 +126,30 @@
                             </div>
                         </div>
                     }
+
+                    @if (race.TeamRacePeople.Any(u => u.Position == -1 && u.Person?.UserName == User.Identity.Name))
+                    {
+                        <button id="@race.RaceId--1-dec" class="mt-1 btn-sm btn-success" onclick="DeclineRace(@race.TeamId, @race.RaceId, -1)">
+                            <a>Můžu</a>
+                        </button>
+
+                        <button id="@race.RaceId--1-con" class="mt-1 btn-sm btn-danger d-none" onclick="ConfirmRace(@race.TeamId, @race.RaceId, -1)">
+                            <a>Nemůžu</a>
+                        </button>
+                    }
+                    else
+                    {
+                        <button id="@race.RaceId--1-dec" class="mt-1 btn-sm btn-success d-none" onclick="DeclineRace(@race.TeamId, @race.RaceId, -1)">
+                            <a>Můžu</a>
+                        </button>
+
+                        <button id="@race.RaceId--1-con" class="mt-1 btn-sm btn-danger" onclick="ConfirmRace(@race.TeamId, @race.RaceId, -1)">
+                            <a>Nemůžu</a>
+                        </button>
+                    }
+                    <p id="@race.RaceId--1" class="text-danger">
+                        @string.Join(", ", race.TeamRacePeople.Select(trp => trp.Person.UserName))
+                    </p>
                 </div>
                 <div class="col-6">
                     @for (int position = 4; position < 8; position++)
@@ -214,16 +238,32 @@
                 oldConButton.classList.remove("d-none");
             }
         }
-        if (positionId != 0) {
-            var newInput = document.getElementById(raceId + "-" + positionId);
-            newInput.value = "@Html.Raw(User.Identity.Name)";
+        var oldInput = document.getElementById(raceId + "--1");
+        if (oldInput.textContent.includes("@User.Identity.Name")) {
+            var oldDecButton = document.getElementById(raceId + "--1-" + "dec");
+            var oldConButton = document.getElementById(raceId + "--1-" + "con");
+            removeNameFromList(oldInput, "@User.Identity.Name");
+            oldDecButton.classList.add("d-none");
+            oldConButton.classList.remove("d-none");
         }
 
-        // Switch buttons
-        var thisButton = document.getElementById(raceId + "-" + positionId + "-" + "con");
-        var otherButton = document.getElementById(raceId + "-" + positionId + "-" + "dec");   
-        ToggleButtons(thisButton, otherButton);
-
+        if (positionId != 0) {
+            if(positionId != -1){
+                var newInput = document.getElementById(raceId + "-" + positionId);
+                newInput.value = "@Html.Raw(User.Identity.Name)";
+            }
+            else{
+                var newInput = document.getElementById(raceId + "-" + positionId);
+                if(newInput.textContent.trim() != ""){
+                    newInput.textContent += ", ";
+                }
+                newInput.textContent += "@Html.Raw(User.Identity.Name)";
+            }
+            // Switch buttons
+            var thisButton = document.getElementById(raceId + "-" + positionId + "-" + "con");
+            var otherButton = document.getElementById(raceId + "-" + positionId + "-" + "dec");   
+            ToggleButtons(thisButton, otherButton);
+        }
     }
 
     function ToggleButtons(button1, button2){
@@ -235,6 +275,24 @@
             button1.classList.add("d-none");
             button2.classList.remove("d-none");
         }
+    }
+
+    function removeNameFromList(inputElement, nameToRemove) {
+        let names = inputElement.textContent.replace(/\s+/g, ' ').trim();
+
+        // Vytvoření regulárního výrazu pro jméno s možnou čárkou a mezerou okolo
+        const regex = new RegExp(`(^|,\\s*)${nameToRemove}(,\\s*|$)`, 'g');
+
+        // Odeber jméno a přebytečné čárky/mezeru
+        names = names.replace(regex, (match, p1, p2) => {
+            if (p1 && p2) return ', '; // mezi dvěma jmény – nahraď jednou čárkou
+            return ''; // jinak odeber úplně
+        });
+
+        // Ořež případné zbylé čárky a mezery
+        names = names.replace(/^,\s*|\s*,\s*$/g, '').trim();
+
+        inputElement.textContent = names;
     }
 
     document.querySelectorAll('.league-filter').forEach(function (checkbox) {
