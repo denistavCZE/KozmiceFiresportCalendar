@@ -147,9 +147,16 @@
                             <a>Nemůžu</a>
                         </button>
                     }
-                    <p id="@race.RaceId--1" class="text-danger">
-                        @string.Join(", ", race.TeamRacePeople.Select(trp => trp.Person.UserName))
-                    </p>
+                   
+                    <div id="away-box" class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
+                        <h5 class="text-danger mt-1">
+                            Nemůže:
+                        </h5>
+                        <p id="@race.RaceId--1" class="text-danger fw-bold">
+                            @string.Join(", ", race.TeamRacePeople.Where(trp => trp.Position == -1).Select(trp => trp.Person.UserName))
+                        </p>
+                    </div>
+                    
                 </div>
                 <div class="col-6">
                     @for (int position = 4; position < 8; position++)
@@ -245,6 +252,9 @@
             removeNameFromList(oldInput, "@User.Identity.Name");
             oldDecButton.classList.add("d-none");
             oldConButton.classList.remove("d-none");
+            if(oldInput.textContent === ""){
+                document.getElementById("away-box").classList.add("d-none");
+            }
         }
 
         if (positionId != 0) {
@@ -252,12 +262,14 @@
                 var newInput = document.getElementById(raceId + "-" + positionId);
                 newInput.value = "@Html.Raw(User.Identity.Name)";
             }
-            else{
+            else{   
                 var newInput = document.getElementById(raceId + "-" + positionId);
                 if(newInput.textContent.trim() != ""){
                     newInput.textContent += ", ";
                 }
                 newInput.textContent += "@Html.Raw(User.Identity.Name)";
+                document.getElementById("away-box").classList.remove("d-none");
+
             }
             // Switch buttons
             var thisButton = document.getElementById(raceId + "-" + positionId + "-" + "con");

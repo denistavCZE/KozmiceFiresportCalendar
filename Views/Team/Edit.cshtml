@@ -165,76 +165,76 @@
             <div class="text-left race " data-league="@(race.Race.League?.Name ?? "ostatni")">
                 @switch(race.Race.League?.Name)
                 {
-                case "OL":
-                    <div class="border-bottom header text-white ol row m-0">
-                        <div class="col-sm-11">
-                            <h4>
+                    case "OL":
+                        <div class="border-bottom header text-white ol row m-0">
+                            <div class="col-sm-11">
+                                <h4>
                                     @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                @if(race.Race.Timer){
-                                    <text> + Časomír</text> 
-                                }
-                            </h4>
+                                    @if(race.Race.Timer){
+                                        <text> + Časomír</text> 
+                                    }
+                                </h4>
+                            </div>
+                            <div class="col-sm-1">
+                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                                    Odebrat
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-sm-1">
-                            <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                Odebrat
-                            </button>
-                        </div>
-                    </div>
-                    break; 
-                case "NHHL":
-                    <div class="border-bottom header text-white nocni  row m-0">
-                        <div class="col-sm-11">
-                            <h4>
+                        break; 
+                    case "NHHL":
+                        <div class="border-bottom header text-white nocni  row m-0">
+                            <div class="col-sm-11">
+                                <h4>
                                     @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                @if (race.Race.Timer)
-                                {
-                                    <text> + Časomír</text>
-                                }
-                            </h4>
+                                    @if (race.Race.Timer)
+                                    {
+                                        <text> + Časomír</text>
+                                    }
+                                </h4>
+                            </div>
+                            <div class="col-sm-1">
+                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                                    Odebrat
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-sm-1">
-                            <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                Odebrat
-                            </button>
-                        </div>
-                    </div>
-                    break;
-                case "MSP":
-                    <div class="border-bottom header text-white msp row m-0">
-                        <div class="col-sm-11">
-                            <h4>
+                        break;
+                    case "MSP":
+                        <div class="border-bottom header text-white msp row m-0">
+                            <div class="col-sm-11">
+                                <h4>
                                     @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                @if (race.Race.Timer)
-                                {
-                                    <text> + Časomír</text>
-                                }
-                            </h4>
+                                    @if (race.Race.Timer)
+                                    {
+                                        <text> + Časomír</text>
+                                    }
+                                </h4>
+                            </div>
+                            <div class="col-sm-1">
+                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                                    Odebrat
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-sm-1">
-                            <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                Odebrat
-                            </button>
-                        </div>
-                    </div>
-                    break;
-                case "Akce":
-                    <div class="border-bottom header" style="background-color: yellow;">
-                        <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
-                    </div>
-                    break;
-                default:
-                    <div class="border-bottom header text-white row m-0" style="background-color: deeppink">
-                        <div class="col-sm-11">
+                        break;
+                    case "Akce":
+                        <div class="border-bottom header" style="background-color: yellow;">
                             <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
                         </div>
-                        <div class="col-sm-1">
-                            <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                Odebrat
-                            </button>
+                        break;
+                    default:
+                        <div class="border-bottom header text-white row m-0" style="background-color: deeppink">
+                            <div class="col-sm-11">
+                                <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
+                            </div>
+                            <div class="col-sm-1">
+                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                                    Odebrat
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    break;
+                        break;
                 }
 
                 <div class="container d-flex">
@@ -300,6 +300,15 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
+                                <h5 class="text-danger mt-1">
+                                    Nemůže:
+                                </h5>
+                                <p id="@race.RaceId--1" class="text-danger fw-bold">
+                                    @string.Join(", ", race.TeamRacePeople.Where(trp => trp.Position == -1).Select(trp => trp.Person.UserName))
+                                </p>
+                            </div>
+                            
                             <div class="row mb-3">
                                 <div class="col-1">
                                     <button type="submit" id="@race.RaceId-save" class="mt-1 btn-sm btn-success">
@@ -307,6 +316,7 @@
                                     </button>
                                 </div>
                             </div>
+                            
                         </div>
                         <div class="col-6">
                             <div class="row mb-3">
