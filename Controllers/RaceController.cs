@@ -12,6 +12,7 @@ using FiresportCalendar.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.ComponentModel.Design;
+using System.Text;
 
 namespace FiresportCalendar.Controllers
 {
@@ -139,6 +140,35 @@ namespace FiresportCalendar.Controllers
             await _raceService.DeleteByIdAsync(id);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Member")]
+        [HttpGet("calendar.ics")]
+        public async Task<IActionResult> GetCalendarFeed()
+        {
+            var races = await _raceService.GetAllUpcomingRaces();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("BEGIN:VCALENDAR");
+            sb.AppendLine("VERSION:2.0");
+            sb.AppendLine("PRODID:-//Kozmice Calendar//CS");
+
+            foreach (var race in races)
+            {
+                sb.AppendLine("BEGIN:VEVENT");
+                sb.AppendLine($"UID:{race.Id}@kozmicecalendar");
+                sb.AppendLine($"DTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}");
+                sb.AppendLine($"DTSTART:{race.DateTime:yyyyMMddTHHmmssZ}");
+                sb.AppendLine($"DTEND:{race.DateTime.AddHours(4):yyyyMMddTHHmmssZ}");
+                sb.AppendLine($"SUMMARY:{race.League?.Name} {race.Place} {race.DateTime:HH:mm}");
+                sb.AppendLine($"DESCRIPTION:{race.League?.Name} {race.Place} {race.DateTime:HH:mm}");
+                sb.AppendLine($"LOCATION:{race.Place}");
+               sb.AppendLine("END:VEVENT");
+            }
+
+            sb.AppendLine("END:VCALENDAR");
+
+            return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/calendar; charset=utf-8", "calendar.ics");
         }
 
         private bool RaceExists(int id)
