@@ -8,49 +8,19 @@
     </div>
     @foreach (var race in Model)
     {
+        var leagueNameLow = race.League?.Name.ToLower() ?? "non-league";
+
         <div id="@race.Id" class="row">
             <div class="col-8 mt-3">
-                @switch (race.League?.Name)
-                {
-                    case "OL":
-                        <div class="border-bottom rounded-3 text-white ol">
-                            <h4 class="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
-                                @if (race.Timer)
-                                {
-                                    <text> + Časomír</text>
-                                }
-                            </h4>
-                        </div>
-                        break;
-                    case "NHHL":
-                        <div class="border-bottom rounded-3 text-white nocni">
-                            <h4 class ="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
-                                @if (race.Timer)
-                                {
-                                    <text> + Časomír</text>
-                                }
-                            </h4>
-                        </div>
-                        break;
-                    case "MSP":
-                        <div class="border-bottom rounded-3 text-white msp">
-                            <h4 class="ms-2 pt-1">
-                                @race.DateTime.ToString("d.M. - HH:mm") @race.League.Name @race.Place
-                                @if (race.Timer)
-                                {
-                                    <text> + Časomír</text>
-                                }
-                            </h4>
-                        </div>
-                        break;
-                    default:
-                        <div class="border-bottom rounded-3 text-white" style="background-color: deeppink">
-                            <h4 class="ms-2 pt-1">@race.DateTime.ToString("d.M. - HH:mm") @race.Place</h4>
-                        </div>
-                        break;
-                }
+                <div class="border-bottom rounded-3 text-white @leagueNameLow">
+                    <h4 class="ms-2 pt-1">
+                        @race.DateTime.ToString("d.M. HH:mm") @race?.League?.Name @race?.Place
+                        @if (race.Timer)
+                        {
+                            <text> + Časomír</text>
+                        }
+                    </h4>
+                </div>
             </div>
             <div class="container row col-4 mt-3">
                 <div class="col-5" >

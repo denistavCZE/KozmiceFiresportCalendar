@@ -5,48 +5,12 @@
 
 @foreach (var race in Model)
 {
+    var leagueNameLow = race.League?.Name.ToLower() ?? "non-league";
     <div id="@race.Id" class="text-left race">
-        @switch(race.League?.Name)
-        {
-        case "OL":
-            <div class="border-bottom text-white ol rounded-3">
-                <h4 class="ms-2 pt-1">
-                    @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
-                </h4>
-            </div>
-            break; 
-        case "NHHL":
-            <div class="border-bottom text-white nocni rounded-3">
-                <h4 class="ms-2 pt-1">
-                    @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
-                </h4>
-            </div>
-            break;
-        case "MSP":
-            <div class="border-bottom text-white msp rounded-3">
-                <h4 class="ms-2 pt-1">
-                    @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
-                </h4>
-            </div>
-            break;
-        case "Akce":
-            <div class="border-bottom rounded-3" style="background-color: yellow;">
-                <h4 class="ms-2 pt-1">
-                    @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
-                </h4>
-            </div>
-            break;
-        default:
-            <div class="border-bottom text-white rounded-3" style="background-color: deeppink">
-                <h4 class="ms-2 pt-1">
-                    @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
-                </h4>
-            </div>
-            break;
-        }
-
-        <div class="container d-flex">
-            
+        <div class="border-bottom text-white rounded-3 @leagueNameLow">
+            <h4 class="ms-2 pt-1">
+                @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
+            </h4>
         </div>
     </div>
 }

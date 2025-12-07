@@ -1,0 +1,33 @@
+﻿@model List<TeamRace>
+@*Filtry*@
+<div class="mt-2 mb-4">
+    @{
+        var usedLeagues = Model
+        .Where(r => r.Race?.League != null)
+        .Select(r => r.Race.League)
+        .Distinct()
+        .ToList();
+    }
+    @foreach (var league in usedLeagues)
+    {
+        var leagueNameLow = league?.Name.ToLower() ?? "non-league";
+        <div class="form-check form-check-inline">
+            <input class="form-check-input league-filter" type="checkbox" value="@leagueNameLow" id="filter-@leagueNameLow" checked />
+            <label class="form-check-label fw-bold text-white px-2 rounded @leagueNameLow" for="filter-@leagueNameLow">
+                @(league?.Name ?? "Jiné")
+            </label>
+        </div>
+    }
+</div>
+<script>
+    document.querySelectorAll('.league-filter').forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            var leagueName = this.value;
+            var show = this.checked;
+
+            document.querySelectorAll(`.race[data-league='${leagueName}']`).forEach(function (raceDiv) {
+                raceDiv.style.display = show ? '' : 'none';
+            });
+        });
+    });
+</script>

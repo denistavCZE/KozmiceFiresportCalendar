@@ -113,129 +113,36 @@
 
     </div>
 
-
-
-    <div class="mt-4 mb-2">
-        @{
-            var usedLeagues = Model.Team.TeamRaces
-            .Where(r => r.Race?.League != null)
-            .Select(r => r.Race.League)
-            .Distinct()
-            .ToList();
-
-            var hasNoLeague = Model.Team.TeamRaces.Any(r => r.Race?.League == null);
-        }
-        @foreach (var league in usedLeagues)
-        {
-
-            var leagueClass = league.Name switch
-            {
-                "OL" => "ol",
-                "NHHL" => "nocni",
-                "MSP" => "msp",
-                _ => ""
-            };
-
-
-            <div class="form-check form-check-inline">
-                <input class="form-check-input league-filter" type="checkbox" value="@league.Name" id="filter-@league.Name" checked />
-                <label class="form-check-label fw-bold text-white px-2 rounded @leagueClass" for="filter-@league.Name">
-                    @league.Name
-                </label>
-            </div>
-        }
-        @if (hasNoLeague)
-        {
-            <div class="form-check form-check-inline">
-                <input class="form-check-input league-filter" type="checkbox" value="ostatni" id="filter-ostatni" checked />
-                <label class="form-check-label fw-bold text-white px-2 rounded" style="background-color: deeppink;" for="filter-ostatni">
-                    Jiné
-                </label>
-            </div>
-        }
-    </div>
+    @*Filtry*@
+    @await Html.PartialAsync("./LeagueFilterPartial.cshtml", Model.Team.TeamRaces);
 
     @foreach (var race in Model.Team.TeamRaces)
     {
+        var leagueNameLow = race.Race.League?.Name.ToLower() ?? "non-league";
+
         <form method="post" asp-controller="Team" asp-action="SetRacePositions" onsubmit="saveScrollPosition()">
             @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
             <input name="raceId" type="hidden" value="@race.Race.Id" />
 
-            <div class="text-left race " data-league="@(race.Race.League?.Name ?? "ostatni")">
-                @switch(race.Race.League?.Name)
-                {
-                    case "OL":
-                        <div class="border-bottom header text-white ol row m-0">
-                            <div class="col-sm-11">
-                                <h4>
-                                    @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                    @if(race.Race.Timer){
-                                        <text> + Časomír</text> 
-                                    }
-                                </h4>
-                            </div>
-                            <div class="col-sm-1">
-                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                    Odebrat
-                                </button>
-                            </div>
-                        </div>
-                        break; 
-                    case "NHHL":
-                        <div class="border-bottom header text-white nocni  row m-0">
-                            <div class="col-sm-11">
-                                <h4>
-                                    @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                    @if (race.Race.Timer)
-                                    {
-                                        <text> + Časomír</text>
-                                    }
-                                </h4>
-                            </div>
-                            <div class="col-sm-1">
-                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                    Odebrat
-                                </button>
-                            </div>
-                        </div>
-                        break;
-                    case "MSP":
-                        <div class="border-bottom header text-white msp row m-0">
-                            <div class="col-sm-11">
-                                <h4>
-                                    @race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.League.Name @race.Race.Place
-                                    @if (race.Race.Timer)
-                                    {
-                                        <text> + Časomír</text>
-                                    }
-                                </h4>
-                            </div>
-                            <div class="col-sm-1">
-                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                    Odebrat
-                                </button>
-                            </div>
-                        </div>
-                        break;
-                    case "Akce":
-                        <div class="border-bottom header" style="background-color: yellow;">
-                            <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
-                        </div>
-                        break;
-                    default:
-                        <div class="border-bottom header text-white row m-0" style="background-color: deeppink">
-                            <div class="col-sm-11">
-                                <h4>@race.Race.DateTime.ToString("d.M. - HH:mm") @race.Race.Place</h4>
-                            </div>
-                            <div class="col-sm-1">
-                                <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
-                                    Odebrat
-                                </button>
-                            </div>
-                        </div>
-                        break;
-                }
+            <div class="text-left race " data-league="@leagueNameLow">
+
+                <div class="border-bottom header text-white row m-0 @leagueNameLow">
+                    <div class="col-11">
+                        <h4>
+                            @race.Race.DateTime.ToString("d.M. HH:mm") @race.Race.League?.Name @race.Race.Place
+                            @if(race.Race.Timer){
+                                <text> + Časomír</text> 
+                            }
+                        </h4>
+                    </div>
+                    <div class="col-1">
+                        <button id="@race.RaceId-del" class="float-end btn-sm btn-danger" onclick="RemoveRace(@race.TeamId, @race.RaceId)">
+                            Odebrat
+                        </button>
+                    </div>
+                </div>
+
 
                 <div class="container d-flex">
                     <div class="col-12 d-flex p mt-2">
@@ -453,15 +360,6 @@
             });
         };
 
-        document.querySelectorAll('.league-filter').forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                var leagueName = this.value;
-                var show = this.checked;
-
-                document.querySelectorAll(`.race[data-league='${leagueName}']`).forEach(function (raceDiv) {
-                    raceDiv.style.display = show ? '' : 'none';
-                });
-            });
-        });
+        
     </script>
 }

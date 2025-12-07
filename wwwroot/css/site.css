@@ -21,6 +21,10 @@ body {
   margin-bottom: 60px;
 }
 
+.bg-yellow{
+    background-color: yellow;
+}
+
 .race {
     margin-top: 10px;
     background-color: lightgrey; 
@@ -31,20 +35,24 @@ body {
         border-top-left-radius: 25px;
         border-top-right-radius: 25px;
     }
-    .header > h4 {
-        margin-left: 20px;
-        font-size: 22px;
-        font-weight: 400
-    }
+.header > h4 {
+    margin-left: 20px;
+    font-size: 22px;
+    font-weight: 400
+}
 
-    .ol {
-        background-color: red;
-    }
+.ol {
+    background-color: red;
+}
 
-.nocni {
+.nhll {
     background-color: black;
 }
 
 .msp {
     background-color: blue;
+}
+
+.non-league {
+    background-color: deeppink;
 }

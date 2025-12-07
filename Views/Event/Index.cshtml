@@ -12,35 +12,24 @@
 }
 @foreach (var ev in Model)
 {
-
+    var confirmed = ViewBag.ConfirmedEvents.Contains(ev.Id);
     <div class="row">
+
         <div class="col-1" style="margin-top: 10px;">
-            @if (ViewBag.ConfirmedEvents.Contains(ev.Id))
-            {
-                <button id="@ev.Id-con" class="mt-1 btn-sm btn-success d-none" onclick="ConfirmEvent(@ev.Id)">
-                    <i class="fa fa-check" aria-hidden="true"></i>
-                </button>
+            <button id="@ev.Id-con" class="mt-1 btn-sm btn-success @(confirmed ? "d-none" : "")" onclick="ConfirmEvent(@ev.Id)">
+                <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
 
-                <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger" onclick="DeclineEvent(@ev.Id)">
-                    <i class="fa fa-lg fa-times"></i>
-                </button>
-            }
-            else
-            {
-                <button id="@ev.Id-con" class="mt-1 btn-sm btn-success" onclick="ConfirmEvent(@ev.Id)">
-                    <i class="fa fa-check" aria-hidden="true"></i>
-                </button>
-
-                <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger d-none" onclick="DeclineEvent(@ev.Id)">
-                    <i class="fa fa-lg fa-times"></i>
-                </button>
-            }
+            <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger @(confirmed ? "" : "d-none")" onclick="DeclineEvent(@ev.Id)">
+                <i class="fa fa-lg fa-times"></i>
+            </button>
         </div>
+
         <div class="col-9">
             <div id="@ev.Id" class="text-left race mb-4">
-                <div class="border-bottom rounded-3" style="background-color: yellow;">
+                <div class="border-bottom rounded-3 bg-yellow">
                     <h4 class="ms-2 pt-1">
-                        @ev.DateTime.ToString("d.M. - HH:mm") @ev.Name - @ev.Place
+                        @ev.DateTime.ToString("d.M. HH:mm") @ev.Name - @ev.Place
                     </h4>    
                 </div>
 
