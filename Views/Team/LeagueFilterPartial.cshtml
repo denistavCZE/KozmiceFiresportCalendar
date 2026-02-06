@@ -26,7 +26,12 @@
             var show = this.checked;
 
             document.querySelectorAll(`.race[data-league='${leagueName}']`).forEach(function (raceDiv) {
+                // Schování okýnek dle ligy
                 raceDiv.style.display = show ? '' : 'none';
+
+                // Zahrnutí/Vyloučení z exportu do kalendáře
+                const input = raceDiv.querySelector('.race-input');
+                input.disabled = !show;
             });
         });
     });

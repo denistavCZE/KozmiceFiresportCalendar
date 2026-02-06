@@ -1,8 +1,5 @@
 ﻿using FiresportCalendar.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using FiresportCalendar.Data;
 
@@ -28,6 +25,10 @@ namespace FiresportCalendar.Services
         public async Task<Race?> GetRaceById(int raceId)
         {
             return await _context.Races.FindAsync(raceId);
+        }
+        public async Task<List<Race>> GetRacesByIds(List<int> raceIds)
+        {
+            return await _context.Races.Include(r => r.League).Where(r => raceIds.Contains(r.Id)).OrderBy(r => r.DateTime).ToListAsync();
         }
         public async Task<List<Race>> GetRacesByTeamId(int teamId)
         {

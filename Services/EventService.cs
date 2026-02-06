@@ -24,6 +24,10 @@ namespace FiresportCalendar.Services
         {
             return await _context.Events.Where(e => e.DateTime >= DateTime.Today).OrderBy(e => e.DateTime).ToListAsync();
         }
+        public async Task<List<Event>> GetEventsByIds(List<int> eventIds)
+        {
+            return await _context.Events.Where(e => eventIds.Contains(e.Id)).OrderBy(e => e.DateTime).ToListAsync();
+        }
         public async Task AddEventPerson(int eventId, string personId)
         {
             EventPerson newPerson = new EventPerson(eventId: eventId, personId: personId);

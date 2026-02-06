@@ -2,113 +2,123 @@
 @{
     ViewData["Title"] = "Závody";
 }
-
+<div class="row">
+    <div class="col-1" style="margin-top: 10px">
+        <button class="mt-1 btn-sm btn-warning" type="submit" form="exportForm">
+            Exportovat
+        </button>
+    </div>
+</div>
 @*Filtry*@
 @await Html.PartialAsync("./LeagueFilterPartial.cshtml", Model.TeamRaces)
 
-@foreach (var race in Model.TeamRaces)
-{
-    var leagueNameLow = race.Race.League?.Name.ToLower() ?? "non-league";
-    <div id="@race.RaceId" class="text-left race" data-league="@leagueNameLow">
-        @*Hlavičky okýnka závodu*@
-        <div class="border-bottom header text-white @leagueNameLow">
-            <h4 style="font-weight: 500;">
-                @race.Race.DateTime.ToString("d.M. HH:mm") @race.Race.League?.Name @race.Race.Place
-                @if(race.Race.Timer){
-                    <text> + Časomír</text> 
-                }
-            </h4>
-        </div>
+<form id="exportForm" method="post" asp-controller="Team" asp-action="ExportRaces">
+    @Html.AntiForgeryToken()
+    @foreach (var race in Model.TeamRaces)
+    {
+        // Skrytý input pro export do kalendáře
+        <input type="hidden" name="raceIds" value="@race.RaceId" class="race-export-input" />
+        var leagueNameLow = race.Race.League?.Name.ToLower() ?? "non-league";
+        <div id="@race.RaceId" class="text-left race" data-league="@leagueNameLow">
+            @*Hlavičky okýnka závodu*@
+            <div class="border-bottom header text-white @leagueNameLow">
+                <h4 style="font-weight: 500;">
+                    @race.Race.DateTime.ToString("d.M. HH:mm") @race.Race.League?.Name @race.Race.Place
+                    @if(race.Race.Timer){
+                        <text> + Časomír</text> 
+                    }
+                </h4>
+            </div>
         
-        @*Levý sloupec pozic*@
-        <div class="container d-flex">
-            <div class="col-12 d-flex p mt-2">
-                <div class="col-6 pe-1">
-                    @for(int position = 1 ; position < 4 ; position++)
-                    {
+            @*Levý sloupec pozic*@
+            <div class="container d-flex">
+                <div class="col-12 d-flex p mt-2">
+                    <div class="col-6 pe-1">
+                        @for(int position = 1 ; position < 4 ; position++)
+                        {
 
-                        string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
+                            string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
 
-                        <div class="row mb-3">
-                            <div class="col-6 row">
-                                @if (Model.People.Any(p => p.UserName == User.Identity?.Name))
-                                {
-                                    <div class="col-6">
-                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success @((String.IsNullOrEmpty(assignedUsername)) ? "" : "d-none")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                        </button>
+                            <div class="row mb-3">
+                                <div class="col-6 row">
+                                    @if (Model.People.Any(p => p.UserName == User.Identity?.Name))
+                                    {
+                                        <div class="col-6">
+                                            <button type="button" id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success @((String.IsNullOrEmpty(assignedUsername)) ? "" : "d-none")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            </button>
 
-                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger @((!String.IsNullOrEmpty(assignedUsername) && assignedUsername == User.Identity?.Name ) ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                            <i class="fa fa-lg fa-times"></i>
-                                        </button>
-                                    </div>
-                                }
-                                <label class="col-6 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
+                                            <button type="button" id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger @((!String.IsNullOrEmpty(assignedUsername) && assignedUsername == User.Identity?.Name) ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                                <i class="fa fa-lg fa-times"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    <label class="col-6 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
+                                </div>
                             </div>
-                            <div class="col-9">
-                                <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
-                            </div>
-                        </div>
-                    }
+                        }
 
-                    @*Zrušení úplné účasti na závodu*@
-                    @{
-                        var userDeclined = race.TeamRacePeople.Any(u => u.Position == -1 && u.Person?.UserName == User.Identity?.Name);
+                        @*Zrušení úplné účasti na závodu*@
+                        @{
+                            var userDeclined = race.TeamRacePeople.Any(u => u.Position == -1 && u.Person?.UserName == User.Identity?.Name);
 
-                        <button id="@race.RaceId--1-dec" class="mt-1 btn-sm btn-success @(userDeclined ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, -1)">
-                            <a>Můžu</a>
-                        </button>
+                            <button type="button" id="@race.RaceId--1-dec" class="mt-1 btn-sm btn-success @(userDeclined ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, -1)">
+                                <a>Můžu</a>
+                            </button>
 
-                        <button id="@race.RaceId--1-con" class="mt-1 btn-sm btn-danger @(userDeclined ? "d-none" : "")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, -1)">
-                            <a>Nemůžu</a>
-                        </button>
-                    }
+                            <button type="button" id="@race.RaceId--1-con" class="mt-1 btn-sm btn-danger @(userDeclined ? "d-none" : "")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, -1)">
+                                <a>Nemůžu</a>
+                            </button>
+                        }
 
                    
-                    <div id="away-box" class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
-                        <h5 class="text-danger mt-1">
-                            Nemůže:
-                        </h5>
-                        <p id="@race.RaceId--1" class="text-danger fw-bold">
-                            @string.Join(", ", race.TeamRacePeople.Where(trp => trp.Position == -1).Select(trp => trp.Person.UserName))
-                        </p>
-                    </div>
-                    
-                </div>
-                <div class="col-6">
-                    @for (int position = 4; position < 8; position++)
-                    {
-                        string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
-
-                        <div class="row mb-3">
-                            <div class="col-6 row">
-                                @if (Model.People.Any(p => p.UserName == User.Identity?.Name))
-                                {
-                                    <div class="col-6">
-                                        <button id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success @((String.IsNullOrEmpty(assignedUsername)) ? "" : "d-none")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                        </button>
-
-                                        <button id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger @((!String.IsNullOrEmpty(assignedUsername) && assignedUsername == User.Identity?.Name) ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
-                                            <i class="fa fa-lg fa-times"></i>
-                                        </button>
-                                    </div>
-                                }
-                                <label class="col-6 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
-                            </div>
-                            <div class="col-9">                           
-                                <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
-                            </div>
+                        <div id="away-box" class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
+                            <h5 class="text-danger mt-1">
+                                Nemůže:
+                            </h5>
+                            <p id="@race.RaceId--1" class="text-danger fw-bold">
+                                @string.Join(", ", race.TeamRacePeople.Where(trp => trp.Position == -1).Select(trp => trp.Person.UserName))
+                            </p>
                         </div>
-                    }
+                    
+                    </div>
+                    <div class="col-6">
+                        @for (int position = 4; position < 8; position++)
+                        {
+                            string assignedUsername = race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "";
+
+                            <div class="row mb-3">
+                                <div class="col-6 row">
+                                    @if (Model.People.Any(p => p.UserName == User.Identity?.Name))
+                                    {
+                                        <div class="col-6">
+                                            <button type="button" id="@race.RaceId-@position-con" class="mt-1 btn-sm btn-success @((String.IsNullOrEmpty(assignedUsername)) ? "" : "d-none")" onclick="ConfirmRace(@race.TeamId, @race.RaceId, @position)">
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            </button>
+
+                                            <button type="button" id="@race.RaceId-@position-dec" class="mt-1 btn-sm btn-danger @((!String.IsNullOrEmpty(assignedUsername) && assignedUsername == User.Identity?.Name) ? "" : "d-none")" onclick="DeclineRace(@race.TeamId, @race.RaceId, @position)">
+                                                <i class="fa fa-lg fa-times"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    <label class="col-6 col-form-label" for="@race.RaceId-@position">@(((PositionNameEnum)position).ToString()):</label>
+                                </div>
+                                <div class="col-9">                           
+                                    <input type="text" id="@race.RaceId-@position" class="form-control" value="@(race.TeamRacePeople.FirstOrDefault(u => u.Position == position)?.Person?.UserName ?? "")" disabled />
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-}
-
+    }
+</form>
 <script>
-    
+
     function ConfirmRace(teamId, raceId, positionId) {
         $.ajax({
             url: '@Url.Action("ConfirmRace", "Team")',

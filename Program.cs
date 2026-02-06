@@ -45,7 +45,7 @@ namespace FiresportCalendar
             builder.Services.AddScoped<ITeamRaceService, TeamRaceService>();
             builder.Services.AddScoped<IPersonService, PersonService>();
             builder.Services.AddScoped<ILeagueService, LeagueService>();
-
+            builder.Services.AddScoped<ICalendarService, CalendarService>();
 
             #endregion
             var app = builder.Build();

@@ -2,6 +2,13 @@
 @{
     ViewData["Title"] = "Akce";
 }
+<div class="row">
+    <div class="col-1" style="margin-top: 10px">
+        <button class="mt-1 btn-sm btn-warning" type="submit" form="exportForm">
+            Exportovat
+        </button>
+    </div>
+</div>
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
     <div class="row">
@@ -10,42 +17,47 @@
         </div>
     </div>
 }
-@foreach (var ev in Model)
-{
-    var confirmed = ViewBag.ConfirmedEvents.Contains(ev.Id);
-    <div class="row">
+<form id="exportForm" method="post" asp-controller="Event" asp-action="ExportEvents">
+    @foreach (var ev in Model)
+    {        
+        // Skrytý input pro export do kalendáře
+        <input type="hidden" name="eventIds" value="@ev.Id" class="event-export-input" />
 
-        <div class="col-1" style="margin-top: 10px;">
-            <button id="@ev.Id-con" class="mt-1 btn-sm btn-success @(confirmed ? "d-none" : "")" onclick="ConfirmEvent(@ev.Id)">
-                <i class="fa fa-check" aria-hidden="true"></i>
-            </button>
+        var confirmed = ViewBag.ConfirmedEvents.Contains(ev.Id);
+        <div class="row">
 
-            <button id="@ev.Id-dec" class="mt-1 btn-sm btn-danger @(confirmed ? "" : "d-none")" onclick="DeclineEvent(@ev.Id)">
-                <i class="fa fa-lg fa-times"></i>
-            </button>
-        </div>
+            <div class="col-1" style="margin-top: 10px;">
+                <button type="button" id="@ev.Id-con" class="mt-1 btn-sm btn-success @(confirmed ? "d-none" : "")" onclick="ConfirmEvent(@ev.Id)">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </button>
 
-        <div class="col-9">
-            <div id="@ev.Id" class="text-left race mb-4">
-                <div class="border-bottom rounded-3 bg-yellow">
-                    <h4 class="ms-2 pt-1">
-                        @ev.DateTime.ToString("d.M. HH:mm") @ev.Name - @ev.Place
-                    </h4>    
-                </div>
+                <button type="button" id="@ev.Id-dec" class="mt-1 btn-sm btn-danger @(confirmed ? "" : "d-none")" onclick="DeclineEvent(@ev.Id)">
+                    <i class="fa fa-lg fa-times"></i>
+                </button>
+            </div>
 
-                <div class="container d-flex">
+            <div class="col-9">
+                <div id="@ev.Id" class="text-left race mb-4">
+                    <div class="border-bottom rounded-3 bg-yellow">
+                        <h4 class="ms-2 pt-1">
+                            @ev.DateTime.ToString("d.M. HH:mm") @ev.Name - @ev.Place
+                        </h4>    
+                    </div>
+
+                    <div class="container d-flex">
+                    </div>
                 </div>
             </div>
+            <div class="col-1" style="margin-top: 10px">
+                <button type="button" class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Detail", "Event", new { id = ev.Id })'">Detail</button>
+            </div>
         </div>
-        <div class="col-1" style="margin-top: 10px">
-            <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Detail", "Event", new {id = ev.Id})'">Detail</button>
-        </div>
-    </div>
-}
-
+    }
+</form>
 <script>
 
     function ConfirmEvent(eventId) {
+        
         $.ajax({
             url: '@Url.Action("ConfirmEvent", "Event")',
             type: 'POST',
