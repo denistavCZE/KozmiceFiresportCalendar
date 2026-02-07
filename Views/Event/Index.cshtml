@@ -18,6 +18,8 @@
     </div>
 }
 <form id="exportForm" method="post" asp-controller="Event" asp-action="ExportEvents">
+    @Html.AntiForgeryToken()
+
     @foreach (var ev in Model)
     {        
         // Skrytý input pro export do kalendáře

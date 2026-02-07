@@ -7,6 +7,7 @@
     <div class="container">
 
         <form method="post" asp-controller="Team" asp-action="AddMember">
+            @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
 
             <label class="col-sm-2 col-form-label" for="AddMember">Přidat člena</label>
@@ -28,6 +29,7 @@
             </div>
         </form>
         <form method="post" asp-controller="Team" asp-action="RemoveMember">
+            @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
 
             <label class="col-sm-2 col-form-label" for="RemoveMember">Odebrat člena</label>
@@ -49,6 +51,7 @@
             </div>
         </form>
         <form method="post" asp-controller="Team" asp-action="AddLeague">
+            @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
 
             <label class="col-sm-2 col-form-label" for="AddLeague">Přidat ligu</label>
@@ -70,6 +73,7 @@
             </div>
         </form>
         <form method="post" asp-controller="Team" asp-action="RemoveLeague">
+            @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
 
             <label class="col-sm-2 col-form-label" for="RemoveLeague">Odebrat ligu</label>
@@ -91,6 +95,7 @@
             </div>
         </form>
         <form method="post" asp-controller="Team" asp-action="AddRace">
+            @Html.AntiForgeryToken()
             <input name="teamId" type="hidden" value="@Model.Team.Id" />
             <label class="col-sm-2 col-form-label" for="AddRace">Přidat závod</label>
             <div class="row">

@@ -22,6 +22,7 @@ namespace FiresportCalendar.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var users = _userManager.Users.OrderBy(u => u.UserName).ToList(); // Filtruje uživatele s potvrzeným emailem
@@ -48,6 +49,7 @@ namespace FiresportCalendar.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -76,6 +78,7 @@ namespace FiresportCalendar.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

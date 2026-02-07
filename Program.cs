@@ -3,6 +3,7 @@ using FiresportCalendar.Models;
 using FiresportCalendar.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FiresportCalendar
@@ -33,7 +34,10 @@ namespace FiresportCalendar
                 .AddRoles<IdentityRole>()
 
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
 
             #region Services
             builder.Services.AddMemoryCache();

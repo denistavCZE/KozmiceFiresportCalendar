@@ -50,12 +50,15 @@ namespace FiresportCalendar.Controllers
 
         // GET: Teams
         [Authorize(Roles="Admin")]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _teamService.GetTeams());
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMember(int teamId, string personId)
         {
             if (await _teamService.AddMember(teamId, personId))
@@ -65,6 +68,8 @@ namespace FiresportCalendar.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveMember(int teamId, string personId)
         {
             if (await _teamService.RemoveMember(teamId, personId))
@@ -74,6 +79,8 @@ namespace FiresportCalendar.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddLeague(int teamId, int leagueId)
         {
             if (await _teamService.AddLeague(teamId, leagueId))
@@ -87,6 +94,8 @@ namespace FiresportCalendar.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveLeague(int teamId, int leagueId)
         {
             if (await _teamService.RemoveLeague(teamId, leagueId))
@@ -98,7 +107,9 @@ namespace FiresportCalendar.Controllers
             else
                 return RedirectToAction("Error", "Home");
         }
-
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRace(int teamId, int raceId)
         {
             if (await _teamService.AddRace(teamId, raceId))
@@ -106,6 +117,9 @@ namespace FiresportCalendar.Controllers
             else
                 return RedirectToAction("Error", "Home");
         }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveRace(int teamId, int raceId)
         {
             if (await _teamService.RemoveRace(teamId, raceId))
@@ -115,6 +129,7 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Teams/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
 
@@ -136,10 +151,7 @@ namespace FiresportCalendar.Controllers
             return View(model);
         }
 
-        private bool TeamExists(int id)
-        {
-            return _context.Teams.Any(e => e.Id == id);
-        }
+        [HttpGet]
         public async Task<IActionResult> Detail (int id)
         {
             Team? team = await _teamService.GetTeamById(id);
@@ -164,6 +176,7 @@ namespace FiresportCalendar.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmRace(int teamId, int raceId, int positionId)
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -179,7 +192,9 @@ namespace FiresportCalendar.Controllers
             }
             return Ok();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task DeclineRace(int teamId, int raceId, int positionId)
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -187,6 +202,7 @@ namespace FiresportCalendar.Controllers
                 await _teamRaceService.RemoveTeamRacePerson(teamId, raceId, positionId, personId);
         }
 
+        [HttpGet]
         public async Task<IActionResult> TimerRaces()
         {
             var races = await _raceService.GetTimerRaces();
@@ -199,6 +215,8 @@ namespace FiresportCalendar.Controllers
 
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleActive(int id)
         {
             await _teamService.ToggleActive(id);

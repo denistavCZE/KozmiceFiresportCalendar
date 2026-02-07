@@ -36,12 +36,14 @@ namespace FiresportCalendar.Controllers
             _leagueService = leagueService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _raceService.GetAllUpcomingRaces());
         }
 
         //GET: Races/Detail/5
+        [HttpGet]
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -61,6 +63,7 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Races/Create
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             ViewBag.Leagues = await _leagueService.GetAllLeagues();
@@ -68,8 +71,6 @@ namespace FiresportCalendar.Controllers
         }
 
         // POST: Races/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Race race)
@@ -83,6 +84,7 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Races/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -100,8 +102,6 @@ namespace FiresportCalendar.Controllers
         }
 
         // POST: Races/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Race race)
@@ -140,35 +140,6 @@ namespace FiresportCalendar.Controllers
             await _raceService.DeleteByIdAsync(id);
 
             return RedirectToAction(nameof(Index));
-        }
-
-        [Authorize(Roles = "Member")]
-        [HttpGet("calendar.ics")]
-        public async Task<IActionResult> GetCalendarFeed()
-        {
-            var races = await _raceService.GetAllUpcomingRaces();
-
-            var sb = new StringBuilder();
-            sb.AppendLine("BEGIN:VCALENDAR");
-            sb.AppendLine("VERSION:2.0");
-            sb.AppendLine("PRODID:-//Kozmice Calendar//CS");
-
-            foreach (var race in races)
-            {
-                sb.AppendLine("BEGIN:VEVENT");
-                sb.AppendLine($"UID:{race.Id}@kozmicecalendar");
-                sb.AppendLine($"DTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}");
-                sb.AppendLine($"DTSTART:{race.DateTime:yyyyMMddTHHmmssZ}");
-                sb.AppendLine($"DTEND:{race.DateTime.AddHours(4):yyyyMMddTHHmmssZ}");
-                sb.AppendLine($"SUMMARY:{race.League?.Name} {race.Place} {race.DateTime:HH:mm}");
-                sb.AppendLine($"DESCRIPTION:{race.League?.Name} {race.Place} {race.DateTime:HH:mm}");
-                sb.AppendLine($"LOCATION:{race.Place}");
-               sb.AppendLine("END:VEVENT");
-            }
-
-            sb.AppendLine("END:VCALENDAR");
-
-            return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/calendar; charset=utf-8", "calendar.ics");
         }
 
         private bool RaceExists(int id)

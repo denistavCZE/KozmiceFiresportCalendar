@@ -40,6 +40,7 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Events
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -51,6 +52,7 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Events/Detail/5
+        [HttpGet]
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -80,15 +82,16 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Events/Create
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Events/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Event @event)
         {
@@ -102,6 +105,8 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Events/Edit/5
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -118,9 +123,8 @@ namespace FiresportCalendar.Controllers
         }
 
         // POST: Events/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Event @event)
         {
@@ -153,6 +157,8 @@ namespace FiresportCalendar.Controllers
         }
 
         // GET: Events/Delete/5
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -172,6 +178,7 @@ namespace FiresportCalendar.Controllers
 
         // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -185,12 +192,8 @@ namespace FiresportCalendar.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EventExists(int id)
-        {
-            return _context.Events.Any(e => e.Id == id);
-        }
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task ConfirmEvent(int eventId)
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -198,6 +201,7 @@ namespace FiresportCalendar.Controllers
                 await _eventService.AddEventPerson(eventId, personId);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task DeclineEvent(int eventId)
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -206,7 +210,6 @@ namespace FiresportCalendar.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExportEvents(List<int> eventIds)
         {
             try
@@ -223,6 +226,15 @@ namespace FiresportCalendar.Controllers
                 return BadRequest("Nepodařilo se exportovat akce.");
             }
         }
+
+
+
+
+        private bool EventExists(int id)
+        {
+            return _context.Events.Any(e => e.Id == id);
+        }
+
 
     }
 }
