@@ -10,5 +10,13 @@ namespace FiresportCalendar.Services
         Task AddEventPerson(int eventId, string personId);
         Task RemoveEventPerson(int eventId, string personId);
         Task<List<int>> GetPersonEvents(string personId);
+        Task<EventDetailModel?> GetEventDetail(int eventId);
+        Task AddEvent(Event @event);
+        Task UpdateEventAsync(Event model);
+        Task DeleteByIdAsync(int id);
+        Task<bool> EventExists(int id);
+
+
+
     }
 }

@@ -1,8 +1,4 @@
 ﻿using FiresportCalendar.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Data;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using FiresportCalendar.Data;
 

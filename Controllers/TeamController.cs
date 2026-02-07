@@ -1,51 +1,36 @@
-﻿using FiresportCalendar.Data;
-using FiresportCalendar.Models;
+﻿using FiresportCalendar.Models;
 using FiresportCalendar.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FiresportCalendar.Controllers
 {
     [Authorize(Roles = "Member")]
     public class TeamController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly ITeamService _teamService;
         private readonly IRaceService _raceService;
         private readonly ITeamRaceService _teamRaceService;
         private readonly IPersonService _personService;
         private readonly ILeagueService _leagueService;
         private readonly ICalendarService _calendarService;
-        private readonly UserManager<Person> _userManager;
 
         public TeamController(
-            ApplicationDbContext context,
             ITeamService teamService,
             IRaceService raceService,
             ITeamRaceService teamRaceService,
             IPersonService personService,
             ILeagueService leagueService,
-            ICalendarService calendarService,
-            UserManager<Person> userManager)
+            ICalendarService calendarService)
         {
-            _context = context;
             _teamService = teamService;
             _raceService = raceService;
             _teamRaceService = teamRaceService;
             _personService = personService;
             _leagueService = leagueService;
             _calendarService = calendarService;
-            _userManager = userManager;
         }
 
         // GET: Teams
@@ -141,7 +126,7 @@ namespace FiresportCalendar.Controllers
 
             team.TeamRaces = team.TeamRaces.OrderBy(tr => tr.Race.DateTime).ToList();
 
-            var model = new TeamEditModel();
+            var model = new TeamEditViewModel();
             model.Team = team;
             model.AllPeople = await _personService.GetPeople();
             model.NonMembers = model.AllPeople.Where(p => !team.People.Contains(p)).ToList();
@@ -169,9 +154,8 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetRacePositions([FromForm] int teamId, [FromForm] int raceId, [FromForm] string kos, [FromForm] string spoj, [FromForm] string stroj, [FromForm] string becka, [FromForm] string rozdel, [FromForm] string lp, [FromForm] string pp)
         {
-            var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (personId != null)
-                await _teamRaceService.SetTeamRacePeople(teamId: teamId, raceId: raceId, kos: kos, spoj: spoj, stroj: stroj, becka: becka, rozdel: rozdel, lp: lp, pp: pp);
+            await _teamRaceService.SetTeamRacePeople(teamId: teamId, raceId: raceId, kos: kos, spoj: spoj, stroj: stroj, becka: becka, rozdel: rozdel, lp: lp, pp: pp);
+            
             return RedirectToAction("Edit", new { id = teamId });
         }
 

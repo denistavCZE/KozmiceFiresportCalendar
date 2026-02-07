@@ -1,53 +1,30 @@
-﻿using FiresportCalendar.Data;
-using FiresportCalendar.Models;
+﻿using FiresportCalendar.Models;
 using FiresportCalendar.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FiresportCalendar.Controllers
 {
     [Authorize(Roles = "Member")]
     public class EventController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IEventService _eventService;
-        private readonly IPersonService _personService;
         private readonly ICalendarService _calendarService;
-        private readonly UserManager<Person> _userManager;
 
         public EventController(
-            ApplicationDbContext context,
             IEventService eventService,
-            IPersonService personService,
-            ICalendarService calendarService,
-            UserManager<Person> userManager)
+            ICalendarService calendarService)
         {
-            _context = context;
             _eventService = eventService;
-            _personService = personService;
             _calendarService = calendarService;
-            _userManager = userManager;
         }
 
         // GET: Events
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (personId != null)
-                ViewBag.ConfirmedEvents = await _eventService.GetPersonEvents(personId);
-            else
-                ViewBag.ConfirmedEvents = new List<int>();
             return View(await _eventService.GetEvents());
         }
 
@@ -60,22 +37,11 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            EventDetailModel model = new EventDetailModel();
+            var model = await _eventService.GetEventDetail(id.Value);
 
-            var @event = await _context.Events
-                .FirstOrDefaultAsync(e => e.Id == id);
-            if (@event == null)
+            if (model == null) 
             {
                 return NotFound();
-            }
-            model.Event = @event;
-
-            var eventPeople = _context.EventPeople.Where(eu => eu.EventId == id).Select(eu => eu.PersonId).ToList();
-            foreach(var person in eventPeople)
-            {
-                var username = (await _personService.GetPersonById(person))?.UserName;
-                if(username != null)
-                    model.People.Add(username);
             }
 
             return View(model);
@@ -97,8 +63,8 @@ namespace FiresportCalendar.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(@event);
-                await _context.SaveChangesAsync();
+                await _eventService.AddEvent(@event);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(@event);
@@ -114,7 +80,8 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events.FindAsync(id);
+            var @event = await _eventService.GetEventById(id.Value);
+
             if (@event == null)
             {
                 return NotFound();
@@ -137,12 +104,11 @@ namespace FiresportCalendar.Controllers
             {
                 try
                 {
-                    _context.Update(@event);
-                    await _context.SaveChangesAsync();
+                    await _eventService.UpdateEventAsync(@event);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
-                    if (!EventExists(@event.Id))
+                    if (!await _eventService.EventExists(@event.Id))
                     {
                         return NotFound();
                     }
@@ -166,8 +132,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var @event = await _eventService.GetEventById(id.Value);
             if (@event == null)
             {
                 return NotFound();
@@ -182,13 +147,8 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
-            if (@event != null)
-            {
-                _context.Events.Remove(@event);
-            }
+            await _eventService.DeleteByIdAsync(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -230,10 +190,7 @@ namespace FiresportCalendar.Controllers
 
 
 
-        private bool EventExists(int id)
-        {
-            return _context.Events.Any(e => e.Id == id);
-        }
+       
 
 
     }

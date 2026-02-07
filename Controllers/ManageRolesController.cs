@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
-using System.Text;
 namespace FiresportCalendar.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -12,13 +9,11 @@ namespace FiresportCalendar.Controllers
     {
         private readonly UserManager<Person> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly SignInManager<Person> _signInManager;
         private readonly IConfiguration _configuration;
-        public ManageRolesController(UserManager<Person> userManager, RoleManager<IdentityRole> roleManager, SignInManager<Person> signInManager, IConfiguration configuration)
+        public ManageRolesController(UserManager<Person> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _signInManager = signInManager;
             _configuration = configuration;
         }
 

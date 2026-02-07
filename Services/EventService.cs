@@ -1,11 +1,7 @@
 ﻿using FiresportCalendar.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using FiresportCalendar.Data;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace FiresportCalendar.Services
 {
@@ -14,15 +10,14 @@ namespace FiresportCalendar.Services
         public readonly ApplicationDbContext _context;
         public EventService( ApplicationDbContext context) { 
             _context = context;
-           
         }
         public async Task<Event?> GetEventById(int eventId)
         {
-            return await _context.Events.FirstAsync(e => e.Id == eventId);
+            return await _context.Events.FindAsync(eventId);
         }
         public async Task<List<Event>> GetEvents()
         {
-            return await _context.Events.Where(e => e.DateTime >= DateTime.Today).OrderBy(e => e.DateTime).ToListAsync();
+            return await _context.Events.Include(e => e.EventPeople).Where(e => e.DateTime >= DateTime.Today).OrderBy(e => e.DateTime).ToListAsync();
         }
         public async Task<List<Event>> GetEventsByIds(List<int> eventIds)
         {
@@ -37,7 +32,7 @@ namespace FiresportCalendar.Services
         }
         public async Task RemoveEventPerson(int eventId, string personId)
         {
-            var person = await _context.EventPeople.Where(eu => eu.EventId == eventId && eu.PersonId == personId).FirstOrDefaultAsync();
+            var person = await _context.EventPeople.FirstOrDefaultAsync(eu => eu.EventId == eventId && eu.PersonId == personId);
 
             if (person != null)
                 _context.EventPeople.Remove(person);
@@ -48,6 +43,61 @@ namespace FiresportCalendar.Services
         public async Task<List<int>> GetPersonEvents(string personId)
         {
             return await _context.EventPeople.Where(eu => eu.PersonId == personId).Select(eu => eu.EventId).ToListAsync();
+        }
+
+        public async Task<EventDetailModel?> GetEventDetail(int eventId)
+        {
+            var @event = await _context.Events
+                                            .Include(e => e.EventPeople)         // eager load
+                                            .ThenInclude(ep => ep.Person)
+                                            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+            if (@event == null)
+                return null;
+
+            var model = new EventDetailModel
+            {
+                Event = @event,
+                People = @event.EventPeople
+                             .Select(ep => ep.Person.UserName ?? "")
+                             .Where(u => !string.IsNullOrEmpty(u))
+                             .ToList()
+            };
+            return model;
+        }
+
+        public async Task AddEvent(Event @event)
+        {
+            _context.Add(@event);
+            await _context.SaveChangesAsync();
+        }
+        public async Task UpdateEventAsync(Event model)
+        {
+            var @event = await _context.Events.FindAsync(model.Id);
+
+            if (@event == null)
+                throw new Exception("Akce nenalezena");
+
+            @event.Name = model.Name;
+            @event.Place = model.Place;
+            @event.DateTime = model.DateTime;
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteByIdAsync(int id)
+        {
+            var @event = await _context.Events.FindAsync(id);
+            if (@event != null)
+            {
+                _context.Events.Remove(@event);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> EventExists(int id)
+        {
+            return await _context.Events.AnyAsync(e => e.Id == id);
         }
     }
 }

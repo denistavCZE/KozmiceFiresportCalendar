@@ -8,11 +8,8 @@ namespace FiresportCalendar.Services
     public class RaceService : IRaceService
     {
         public readonly ApplicationDbContext _context;
-        private readonly ITeamRaceService _teamRaceService;
         public RaceService( ApplicationDbContext context, ITeamRaceService teamRaceService) { 
-            _context = context;
-            _teamRaceService = teamRaceService;
-           
+            _context = context;           
         }
         public async Task<List<Race>> GetAllRaces()
         {
@@ -40,12 +37,18 @@ namespace FiresportCalendar.Services
             var res = await _context.Races.Where(r => r.Timer && r.DateTime > DateTime.Today).OrderBy(r => r.DateTime).ToListAsync();
             return res;
         }
-        public async Task UpdateRaceAsync(Race race)
+        public async Task UpdateRaceAsync(Race model)
         {
-            race.TeamRaces = await _teamRaceService.GetAllTeamRacesByRaceId(race.Id);
+            var race = await _context.Races.FindAsync(model.Id);
 
-            _context.Entry(race).State = EntityState.Modified;
-            
+            if (race == null)
+                throw new Exception("Závod nenalezen.");
+
+            race.Place = model.Place;
+            race.DateTime = model.DateTime;
+            race.Timer = model.Timer;
+            race.LeagueId = model.LeagueId;
+
             await _context.SaveChangesAsync();
         }
 

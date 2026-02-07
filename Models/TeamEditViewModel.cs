@@ -2,7 +2,7 @@
 
 namespace FiresportCalendar.Models
 {
-    public class TeamEditModel
+    public class TeamEditViewModel
     {
         public Team Team { get; set; } = new Team();
         public List<Person> NonMembers { get; set; } = new List<Person>();

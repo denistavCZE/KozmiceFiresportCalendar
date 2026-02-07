@@ -1,37 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FiresportCalendar.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using FiresportCalendar.Models;
 using Microsoft.AspNetCore.Authorization;
 using FiresportCalendar.Services;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using System.ComponentModel.Design;
-using System.Text;
+//using Microsoft.AspNetCore.Identity;
 
 namespace FiresportCalendar.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class RaceController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<Person> _userManager;
         private readonly IRaceService _raceService;
         private readonly ILeagueService _leagueService;
 
         public RaceController(
-            ApplicationDbContext context,
-            UserManager<Person> userManager,
             IRaceService raceService,
             ILeagueService leagueService)
         {
-            _context = context;
-            _userManager = userManager;
             _raceService = raceService;
             _leagueService = leagueService;
         }
@@ -117,7 +101,7 @@ namespace FiresportCalendar.Controllers
                 {
                     await _raceService.UpdateRaceAsync(race);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
                     if (!RaceExists(race.Id))
                     {
@@ -144,7 +128,7 @@ namespace FiresportCalendar.Controllers
 
         private bool RaceExists(int id)
         {
-            return _context.Races.Any(r => r.Id == id);
+            return (_raceService.GetRaceById(id) == null) ? false : true ;
         }
         
     }
