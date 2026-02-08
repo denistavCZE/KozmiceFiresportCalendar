@@ -31,9 +31,10 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<Person> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly ReCaptchaService _reCaptchaService;
+        private readonly IReCaptchaService _reCaptchaService;
         private readonly IConfiguration _configuration;
 
+        public bool IsEnabled => _reCaptchaService.IsEnabled;
         public string ReCaptchaSiteKey { get; set; }
 
         public RegisterModel(
@@ -42,7 +43,7 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
             SignInManager<Person> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            ReCaptchaService reCaptchaService,
+            IReCaptchaService reCaptchaService,
             IConfiguration configuration)
         {
             _userManager = userManager;

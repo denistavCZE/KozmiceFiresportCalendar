@@ -23,10 +23,11 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
     {
         private readonly UserManager<Person> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly ReCaptchaService _reCaptchaService;
+        private readonly IReCaptchaService _reCaptchaService;
         private readonly IConfiguration _configuration;
+        public bool IsEnabled => _reCaptchaService.IsEnabled;
         public string ReCaptchaSiteKey { get; set; }
-        public ForgotPasswordModel(UserManager<Person> userManager, IEmailSender emailSender, ReCaptchaService reCaptchaService, IConfiguration configuration)
+        public ForgotPasswordModel(UserManager<Person> userManager, IEmailSender emailSender, IReCaptchaService reCaptchaService, IConfiguration configuration)
         {
             _userManager = userManager;
             _emailSender = emailSender;

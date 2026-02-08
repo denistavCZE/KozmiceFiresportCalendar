@@ -22,12 +22,13 @@ namespace FiresportCalendar.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<Person> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly ReCaptchaService _reCaptchaService;
+        private readonly IReCaptchaService _reCaptchaService;
         private readonly IConfiguration _configuration;
 
+        public bool IsEnabled => _reCaptchaService.IsEnabled;
         public string ReCaptchaSiteKey { get; set; }
 
-        public LoginModel(SignInManager<Person> signInManager, ILogger<LoginModel> logger, ReCaptchaService reCaptchaService, IConfiguration configuration)
+        public LoginModel(SignInManager<Person> signInManager, ILogger<LoginModel> logger, IReCaptchaService reCaptchaService, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _logger = logger;

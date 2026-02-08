@@ -5,12 +5,14 @@ public class ReCaptchaService : IReCaptchaService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
+    public bool IsEnabled => true;
 
     public ReCaptchaService(IConfiguration configuration, HttpClient httpClient)
     {
         _configuration = configuration;
         _httpClient = httpClient;
     }
+
 
     public async Task<bool> IsCaptchaValid(string token)
     {

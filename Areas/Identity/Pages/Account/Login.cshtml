@@ -83,21 +83,31 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://www.google.com/recaptcha/api.js?render=@Model.ReCaptchaSiteKey"></script>
 
-    <script>
-        grecaptcha.ready(function() {
-            document.getElementById("account").onsubmit = function(event) {
-                event.preventDefault(); 
+    @if (Model.IsEnabled)
+    {
+        <script src="https://www.google.com/recaptcha/api.js?render=@Model.ReCaptchaSiteKey"></script>
 
-                grecaptcha.execute('@Model.ReCaptchaSiteKey', { action: 'login' }).then(function(token) {
-                    
-                    document.getElementById("recaptchaToken").value = token;
+        <script>
+            grecaptcha.ready(function () {
+                document.getElementById("account").onsubmit = function (event) {
+                    event.preventDefault();
 
-                    document.getElementById("account").submit();
-                });
+                    grecaptcha.execute('@Model.ReCaptchaSiteKey', { action: 'login' }).then(function (token) {
+                        document.getElementById("recaptchaToken").value = token;
+                        document.getElementById("account").submit();
+                    });
+                };
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            document.getElementById("account").onsubmit = function () {
+                document.getElementById("recaptchaToken").value = ""; // development
             };
-        });
-    </script>
+        </script>
+    }
 
 }

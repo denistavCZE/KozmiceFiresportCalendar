@@ -3,10 +3,7 @@ using System.Text.Json.Serialization;
 
 public class FakeReCaptchaService : IReCaptchaService
 {
-    public FakeReCaptchaService()
-    {
-
-    }
+    public bool IsEnabled => false;
 
     public Task<bool> IsCaptchaValid(string token)
     {

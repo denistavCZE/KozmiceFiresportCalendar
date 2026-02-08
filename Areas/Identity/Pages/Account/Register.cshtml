@@ -67,20 +67,33 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://www.google.com/recaptcha/api.js?render=@Model.ReCaptchaSiteKey"></script>
+    @if (Model.IsEnabled)
+    {
+        <script src="https://www.google.com/recaptcha/api.js?render=@Model.ReCaptchaSiteKey"></script>
 
-    <script>
-        grecaptcha.ready(function() {
-            document.getElementById("registerForm").onsubmit = function(event) {
-                event.preventDefault();
+        <script>
+            grecaptcha.ready(function() {
+                document.getElementById("registerForm").onsubmit = function(event) {
+                    event.preventDefault();
 
-                grecaptcha.execute('@Model.ReCaptchaSiteKey', { action: 'register' }).then(function(token) {
+                    grecaptcha.execute('@Model.ReCaptchaSiteKey', { action: 'register' }).then(function(token) {
 
-                    document.getElementById("recaptchaToken").value = token;
+                        document.getElementById("recaptchaToken").value = token;
 
-                    document.getElementById("registerForm").submit();
-                });
+                        document.getElementById("registerForm").submit();
+                    });
+                };
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            document.getElementById("registerForm").onsubmit = function () {
+                document.getElementById("recaptchaToken").value = ""; // development
             };
-        });
-    </script>
+        </script>
+    }
+
+   
 }
