@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-public class ReCaptchaService
+public class ReCaptchaService : IReCaptchaService
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;

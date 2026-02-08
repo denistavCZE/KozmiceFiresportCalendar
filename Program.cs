@@ -41,8 +41,15 @@ namespace FiresportCalendar
 
             #region Services
             builder.Services.AddMemoryCache();
-            builder.Services.AddTransient<IEmailSender, EmailService>();
-            builder.Services.AddHttpClient<ReCaptchaService>();
+            builder.Services.AddTransient<IEmailSender, EmailService>(); 
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddScoped<IReCaptchaService, FakeReCaptchaService>();
+            }
+            else
+            {
+                builder.Services.AddHttpClient<IReCaptchaService, ReCaptchaService>();
+            }
             builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<IRaceService, RaceService>();
             builder.Services.AddScoped<IEventService, EventService>();
