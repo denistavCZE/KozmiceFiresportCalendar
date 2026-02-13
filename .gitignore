@@ -364,3 +364,8 @@ FodyWeavers.xsd
 
 /appsettings.Development.json
 /appsettings.Production.json
+/FiresportCalendar/appsettings.Production.json
+/FiresportCalendar/appsettings.Development.json
+/FiresportCalendar/appsettings.json
+/FiresportCalendar/appsettings.Development.json
+/FiresportCalendar/appsettings.Production.json
