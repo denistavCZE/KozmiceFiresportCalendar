@@ -48,7 +48,7 @@ namespace FiresportCalendar.Services
         public async Task<EventDetailModel?> GetEventDetail(int eventId)
         {
             var @event = await _context.Events
-                                            .Include(e => e.EventPeople)         // eager load
+                                            .Include(e => e.EventPeople)
                                             .ThenInclude(ep => ep.Person)
                                             .FirstOrDefaultAsync(e => e.Id == eventId);
 
