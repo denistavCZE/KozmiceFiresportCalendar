@@ -4,7 +4,7 @@ using FiresportCalendar.Services;
 using Microsoft.EntityFrameworkCore;
 namespace FiresportCalendar.Tests.Tests.Services
 {
-    public class EventServiceIntegrationTest : IClassFixture<CustomWebApplicationFactory>
+    public class EventServiceIntegrationTests : IClassFixture<CustomWebApplicationFactory>
     {
         private ApplicationDbContext CreateContext()
         {

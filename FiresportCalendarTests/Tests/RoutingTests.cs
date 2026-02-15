@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
-namespace FiresportCalendarTests
+namespace FiresportCalendar.Tests.Tests
 {
     public class RoutingTests : IClassFixture<CustomWebApplicationFactory>
     {
