@@ -8,7 +8,7 @@ namespace FiresportCalendar.Services
     public class RaceService : IRaceService
     {
         public readonly ApplicationDbContext _context;
-        public RaceService( ApplicationDbContext context, ITeamRaceService teamRaceService) { 
+        public RaceService( ApplicationDbContext context) { 
             _context = context;           
         }
         public async Task<List<Race>> GetAllRaces()
