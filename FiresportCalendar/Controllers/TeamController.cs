@@ -130,7 +130,7 @@ namespace FiresportCalendar.Controllers
             model.Team = team;
             model.AllPeople = await _personService.GetPeople();
             model.NonMembers = model.AllPeople.Where(p => !team.People.Contains(p)).ToList();
-            model.NonTeamLeagues = (await _leagueService.GetAllLeagues()).Where(l => !team.Leagues.Contains(l)).ToList();
+            model.NonTeamLeagues = (await _leagueService.GetAllAsync()).Where(l => !team.Leagues.Contains(l)).ToList();
             model.NonTeamRaces = (await _raceService.GetAllUpcomingRaces()).Where(r => !team.TeamRaces.Select(tr => tr.RaceId).Contains(r.Id)).ToList();
 
             return View(model);
@@ -192,7 +192,7 @@ namespace FiresportCalendar.Controllers
             var races = await _raceService.GetTimerRaces();
             foreach (var race in races) {
                 if (race.LeagueId.HasValue)
-                    race.League = await _leagueService.GetLeagueById(race.LeagueId.Value);
+                    race.League = await _leagueService.GetByIdAsync(race.LeagueId.Value);
             }
             return View(races);
         }

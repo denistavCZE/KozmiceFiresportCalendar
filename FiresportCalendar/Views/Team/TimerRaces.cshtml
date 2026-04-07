@@ -7,7 +7,7 @@
 {
     var leagueNameLow = race.League?.Name.ToLower() ?? "non-league";
     <div id="@race.Id" class="text-left race">
-        <div class="border-bottom text-white rounded-3 @leagueNameLow">
+        <div class="border-bottom text-white rounded-3 @ColorEnumExtension.ToCssClass(race.League?.Color)">
             <h4 class="ms-2 pt-1">
                 @race.DateTime.ToString("dd.M. - HH:mm") @race.Place
             </h4>

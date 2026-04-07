@@ -16,12 +16,12 @@
     @Html.AntiForgeryToken()
     @foreach (var race in Model.TeamRaces)
     {
-        // Skrytý input pro export do kalendáře
+        @* Skrytý input pro export do kalendáře *@
         <input type="hidden" name="raceIds" value="@race.RaceId" class="race-export-input" />
         var leagueNameLow = race.Race.League?.Name.ToLower() ?? "non-league";
         <div id="@race.RaceId" class="text-left race" data-league="@leagueNameLow">
-            @*Hlavičky okýnka závodu*@
-            <div class="border-bottom header text-white @leagueNameLow">
+            @*Hlavička okýnka závodu*@
+            <div class="border-bottom header text-white @ColorEnumExtension.ToCssClass(race.Race.League?.Color)">
                 <h4 style="font-weight: 500;">
                     @race.Race.DateTime.ToString("d.M. HH:mm") @race.Race.League?.Name @race.Race.Place
                     @if(race.Race.Timer){

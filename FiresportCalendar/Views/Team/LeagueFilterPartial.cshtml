@@ -13,7 +13,7 @@
         var leagueNameLow = league?.Name.ToLower() ?? "non-league";
         <div class="form-check form-check-inline">
             <input class="form-check-input league-filter" type="checkbox" value="@leagueNameLow" id="filter-@leagueNameLow" checked />
-            <label class="form-check-label fw-bold text-white px-2 rounded @leagueNameLow" for="filter-@leagueNameLow">
+            <label class="form-check-label fw-bold text-white px-2 rounded @ColorEnumExtension.ToCssClass(league?.Color)" for="filter-@leagueNameLow">
                 @(league?.Name ?? "Jiné")
             </label>
         </div>

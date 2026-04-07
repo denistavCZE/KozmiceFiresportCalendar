@@ -1,0 +1,34 @@
+﻿@model List<League>
+@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <div class="row">
+        <div class="col-1" style="margin-top: 10px">
+            <button class="mt-1 btn-sm btn-success" onclick="location.href='@Url.Action("Create", "League")'">Přidat</button>
+        </div>
+    </div>
+    @foreach (var league in Model)
+    {
+        <div id="@league.Id" class="row">
+            <div class="col-8 mt-3">
+                <div class="border-bottom rounded-3 text-white @ColorEnumExtension.ToCssClass(league?.Color)">
+                    <h4 class="ms-2 pt-1">
+                        @league?.Name
+                    </h4>
+                </div>
+            </div>
+            <div class="container row col-4 mt-3">
+                <div class="col-5" >
+                    <button class="mt-1 btn-sm btn-warning" onclick="location.href='@Url.Action("Edit", "League", new {id = league?.Id})'">Upravit</button>
+                </div>
+                <div class="col-5">
+                    <form asp-action="Delete" asp-controller="League" method="post" onsubmit="return confirm('Opravdu chcete tuto ligu smazat?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@league.Id" />
+                        <button type="submit" class="mt-1 btn-sm btn-danger">Odstranit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+

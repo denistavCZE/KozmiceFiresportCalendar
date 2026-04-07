@@ -12,7 +12,7 @@
 
         <div id="@race.Id" class="row">
             <div class="col-8 mt-3">
-                <div class="border-bottom rounded-3 text-white @leagueNameLow">
+                <div class="border-bottom rounded-3 text-white @ColorEnumExtension.ToCssClass(race.League?.Color)">
                     <h4 class="ms-2 pt-1">
                         @race.DateTime.ToString("d.M. HH:mm") @race?.League?.Name @race?.Place
                         @if (race.Timer)

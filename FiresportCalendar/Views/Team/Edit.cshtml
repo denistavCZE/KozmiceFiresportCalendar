@@ -132,7 +132,7 @@
 
             <div class="text-left race " data-league="@leagueNameLow">
 
-                <div class="border-bottom header text-white row m-0 @leagueNameLow">
+                <div class="border-bottom header text-white row m-0 @ColorEnumExtension.ToCssClass(race.Race.League?.Color)">
                     <div class="col-11">
                         <h4>
                             @race.Race.DateTime.ToString("d.M. HH:mm") @race.Race.League?.Name @race.Race.Place

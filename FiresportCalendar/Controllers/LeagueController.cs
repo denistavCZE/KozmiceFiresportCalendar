@@ -7,26 +7,23 @@ using FiresportCalendar.Services;
 namespace FiresportCalendar.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class RaceController : Controller
+    public class LeagueController : Controller
     {
-        private readonly IRaceService _raceService;
         private readonly ILeagueService _leagueService;
 
-        public RaceController(
-            IRaceService raceService,
+        public LeagueController(
             ILeagueService leagueService)
         {
-            _raceService = raceService;
             _leagueService = leagueService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _raceService.GetAllUpcomingRaces());
+            return View(await _leagueService.GetAllAsync());
         }
 
-        //GET: Races/Detail/5
+        //GET: Leagues/Detail/5
         [HttpGet]
         public async Task<IActionResult> Detail(int? id)
         {
@@ -37,8 +34,8 @@ namespace FiresportCalendar.Controllers
 
             EventDetailModel model = new EventDetailModel();
 
-            var race = await _raceService.GetRaceById(id.Value);
-            if (race == null)
+            var league = await _leagueService.GetByIdAsync(id.Value);
+            if (league == null)
             {
                 return NotFound();
             }
@@ -46,7 +43,7 @@ namespace FiresportCalendar.Controllers
             return View(model);
         }
 
-        // GET: Races/Create
+        // GET: Leagues/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -54,20 +51,20 @@ namespace FiresportCalendar.Controllers
             return View();
         }
 
-        // POST: Races/Create
+        // POST: Leagues/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Race race)
+        public async Task<IActionResult> Create(League league)
         {
             if (ModelState.IsValid)
             {
-                await _raceService.AddRaceAsync(race);
+                await _leagueService.AddAsync(league);
                 return RedirectToAction(nameof(Index));
             }
-            return View(race);
+            return View(league);
         }
 
-        // GET: Races/Edit/5
+        // GET: Leagues/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -76,21 +73,21 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var race = await _raceService.GetRaceById(id.Value);
+            var league = await _leagueService.GetByIdAsync(id.Value);
             ViewBag.Leagues = await _leagueService.GetAllAsync();
-            if (race == null)
+            if (league == null)
             {
                 return NotFound();
             }
-            return View(race);
+            return View(league);
         }
 
-        // POST: Races/Edit/5
+        // POST: Leagues/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Race race)
+        public async Task<IActionResult> Edit(int id, League league)
         {
-            if (id != race.Id)
+            if (id != league.Id)
             {
                 return BadRequest();
             }
@@ -99,11 +96,11 @@ namespace FiresportCalendar.Controllers
             {
                 try
                 {
-                    await _raceService.UpdateRaceAsync(race);
+                    await _leagueService.UpdateAsync(league);
                 }
                 catch (Exception)
                 {
-                    if (!RaceExists(race.Id))
+                    if (!LeagueExists(league.Id))
                     {
                         return NotFound();
                     }
@@ -116,19 +113,19 @@ namespace FiresportCalendar.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: Races/Delete/5
+        // POST: Leagues/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _raceService.DeleteByIdAsync(id);
+            await _leagueService.DeleteByIdAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RaceExists(int id)
+        private bool LeagueExists(int id)
         {
-            return (_raceService.GetRaceById(id) == null) ? false : true ;
+            return (_leagueService.GetByIdAsync(id) == null) ? false : true ;
         }
         
     }
