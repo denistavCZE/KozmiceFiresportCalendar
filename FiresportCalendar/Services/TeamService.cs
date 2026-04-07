@@ -12,7 +12,7 @@ namespace FiresportCalendar.Services
             _context = context;
            
         }
-        public async Task<Team?> GetTeamById(int teamId)
+        public async Task<Team?> GetByIdAsync(int teamId)
         {
             return await _context.Teams.Include(t => t.People)
                                        .Include(t => t.Leagues)
@@ -24,17 +24,17 @@ namespace FiresportCalendar.Services
                                                 .ThenInclude(trp => trp.Person)
                                        .FirstOrDefaultAsync(t => t.Id == teamId);
         }
-        public async Task<List<Team>> GetTeams()
+        public async Task<List<Team>> GetAllAsync()
         {
             return await _context.Teams.OrderBy(t => !t.Active).ThenBy(t => t.Name).ToListAsync();
  
         }
-        public async Task<List<Team>> GetActiveTeams()
+        public async Task<List<Team>> GetActiveTeamsAsync()
         {
             return await _context.Teams.Where(t => t.Active).OrderBy(t => t.Name).ToListAsync();
         }
 
-        public async Task<bool> AddMember(int teamId, string personId)
+        public async Task<bool> AddMemberAsync(int teamId, string personId)
         {
             var team = await _context.Teams.Include(t => t.People).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -54,7 +54,7 @@ namespace FiresportCalendar.Services
 
         }
 
-        public async Task<bool> RemoveMember(int teamId, string personId)
+        public async Task<bool> RemoveMemberAsync(int teamId, string personId)
         {
             var team = await _context.Teams.Include(t => t.People).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -75,7 +75,7 @@ namespace FiresportCalendar.Services
         }
 
 
-        public async Task<bool> AddLeague(int teamId, int leagueId)
+        public async Task<bool> AddLeagueAsync(int teamId, int leagueId)
         {
             var team = await _context.Teams.Include(t => t.Leagues).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -94,7 +94,7 @@ namespace FiresportCalendar.Services
             return true;
 
         }
-        public async Task<bool> RemoveLeague(int teamId, int leagueId)
+        public async Task<bool> RemoveLeagueAsync(int teamId, int leagueId)
         {
             var team = await _context.Teams.Include(t => t.Leagues).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -113,7 +113,7 @@ namespace FiresportCalendar.Services
             return true;
 
         }
-        public async Task<bool> AddRace(int teamId, int raceId)
+        public async Task<bool> AddRaceAsync(int teamId, int raceId)
         {
             var team = await _context.Teams.Include(t => t.TeamRaces).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -134,7 +134,7 @@ namespace FiresportCalendar.Services
             return true;
 
         }
-        public async Task<bool> RemoveRace(int teamId, int raceId)
+        public async Task<bool> RemoveRaceAsync(int teamId, int raceId)
         {
             var team = await _context.Teams.Include(t => t.TeamRaces).FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -151,7 +151,7 @@ namespace FiresportCalendar.Services
             return true;
 
         }
-        public async Task<List<Person>> GetMembers(int teamId)
+        public async Task<List<Person>> GetMembersAsync(int teamId)
         {
             return (await _context.Teams.Include(t => t.People).FirstOrDefaultAsync(t => t.Id == teamId))?.People.ToList() ?? new List<Person>();
         }
@@ -160,9 +160,9 @@ namespace FiresportCalendar.Services
             var userName = (await _context.Users.FirstOrDefaultAsync(u => u.Id == personId))?.UserName;
             if (userName == null)
                 return false;
-            return (await GetMembers(teamId)).Any(m => m.UserName == userName);
+            return (await GetMembersAsync(teamId)).Any(m => m.UserName == userName);
         }
-        public async Task<List<League>> GetTeamLeagues(int teamId)
+        public async Task<List<League>> GetLeaguesAsync(int teamId)
         {
             var team = await _context.Teams.FirstOrDefaultAsync(t => t.Id == teamId);
             if (team == null)
@@ -171,7 +171,7 @@ namespace FiresportCalendar.Services
             return team.Leagues.ToList();
         }
         
-        public async Task AddUpcomingLeagueRaces(int teamId, int leagueId)
+        public async Task AddUpcomingLeagueRacesAsync(int teamId, int leagueId)
         {
             var upcomingLeagueRaces = await _context.Races.Where(r => r.DateTime > DateTime.Today && r.LeagueId == leagueId).ToListAsync();
 
@@ -189,7 +189,7 @@ namespace FiresportCalendar.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveUpcomingLeagueRaces(int teamId, int leagueId)
+        public async Task RemoveUpcomingLeagueRacesAsync(int teamId, int leagueId)
         {
             var team = await _context.Teams
                                 .Include(t => t.TeamRaces)
@@ -205,7 +205,7 @@ namespace FiresportCalendar.Services
 
             await _context.SaveChangesAsync();
         }
-        public async Task ToggleActive(int teamId)
+        public async Task ToggleActiveAsync(int teamId)
         {
             var team = await _context.Teams.FindAsync(teamId);
 

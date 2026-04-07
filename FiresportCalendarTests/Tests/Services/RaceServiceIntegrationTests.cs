@@ -33,7 +33,7 @@ namespace FiresportCalendar.Tests.Tests.Services
                 Timer = true
             };
 
-            await service.AddRaceAsync(race);
+            await service.AddAsync(race);
 
             var saved = await context.Races.FirstOrDefaultAsync();
 
@@ -54,7 +54,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Races.AddRange(race1, race2);
             await context.SaveChangesAsync();
 
-            var result = await service.GetAllRaces();
+            var result = await service.GetAllAsync();
 
             Assert.Equal(2, result.Count);
             Assert.Equal("Kozmice", result[0].Place);
@@ -73,7 +73,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Races.AddRange(oldRace, futureRace);
             await context.SaveChangesAsync();
 
-            var result = await service.GetAllUpcomingRaces();
+            var result = await service.GetAllUpcomingRacesAsync();
 
             Assert.Single(result);
             Assert.Equal("Future Place", result[0].Place);
@@ -89,7 +89,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Races.Add(race);
             await context.SaveChangesAsync();
 
-            var result = await service.GetRaceById(race.Id);
+            var result = await service.GetByIdAsync(race.Id);
 
             Assert.NotNull(result);
             Assert.Equal("Hlučín", result.Place);
@@ -111,7 +111,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             };
 
             await Assert.ThrowsAsync<Exception>(() =>
-                service.UpdateRaceAsync(race));
+                service.UpdateAsync(race));
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             race.Timer = true;
             race.DateTime = time.AddDays(1);
 
-            await service.UpdateRaceAsync(race);
+            await service.UpdateAsync(race);
 
             var updated = await context.Races.FindAsync(race.Id);
 
@@ -169,7 +169,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Races.AddRange(race1, race2, race3);
             await context.SaveChangesAsync();
 
-            var result = await service.GetTimerRaces();
+            var result = await service.GetTimerRacesAsync();
 
             Assert.Single(result);
             Assert.Equal("Valid", result[0].Place);

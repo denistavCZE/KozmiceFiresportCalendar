@@ -11,33 +11,33 @@ namespace FiresportCalendar.Services
         public RaceService( ApplicationDbContext context) { 
             _context = context;           
         }
-        public async Task<List<Race>> GetAllRaces()
+        public async Task<List<Race>> GetAllAsync()
         {
             return await _context.Races.Include(r => r.League).OrderBy(r => r.DateTime).ToListAsync();
         }
-        public async Task<List<Race>> GetAllUpcomingRaces()
+        public async Task<List<Race>> GetAllUpcomingRacesAsync()
         {
             return await _context.Races.Include(r => r.League).Where(r => r.DateTime > DateTime.Today).OrderBy(r => r.DateTime).ToListAsync();
         }
-        public async Task<Race?> GetRaceById(int raceId)
+        public async Task<Race?> GetByIdAsync(int raceId)
         {
             return await _context.Races.FindAsync(raceId);
         }
-        public async Task<List<Race>> GetRacesByIds(List<int> raceIds)
+        public async Task<List<Race>> GetByIdsAsync(List<int> raceIds)
         {
             return await _context.Races.Include(r => r.League).Where(r => raceIds.Contains(r.Id)).OrderBy(r => r.DateTime).ToListAsync();
         }
-        public async Task<List<Race>> GetRacesByTeamId(int teamId)
+        public async Task<List<Race>> GetByTeamIdAsync(int teamId)
         {
             var res = await _context.Races.Where(r => r.TeamRaces.Any(t => t.TeamId == teamId)).OrderBy(r => r.DateTime).ToListAsync();
             return res;
         }
-        public async Task<List<Race>> GetTimerRaces()
+        public async Task<List<Race>> GetTimerRacesAsync()
         {
             var res = await _context.Races.Where(r => r.Timer && r.DateTime > DateTime.Today).OrderBy(r => r.DateTime).ToListAsync();
             return res;
         }
-        public async Task UpdateRaceAsync(Race model)
+        public async Task UpdateAsync(Race model)
         {
             var race = await _context.Races.FindAsync(model.Id);
 
@@ -63,7 +63,7 @@ namespace FiresportCalendar.Services
             await _context.SaveChangesAsync();
         }
         
-        public async Task AddRaceAsync(Race race)
+        public async Task AddAsync(Race race)
         {
             _context.Races.Add(race);
             await _context.SaveChangesAsync();

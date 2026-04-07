@@ -38,7 +38,7 @@ namespace FiresportCalendar.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _teamService.GetTeams());
+            return View(await _teamService.GetAllAsync());
         }
 
         [Authorize(Roles = "Admin")]
@@ -46,7 +46,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddMember(int teamId, string personId)
         {
-            if (await _teamService.AddMember(teamId, personId))
+            if (await _teamService.AddMemberAsync(teamId, personId))
                 return RedirectToAction("Edit", new { id = teamId });
             else
                 return RedirectToAction("Error", "Home");
@@ -57,7 +57,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveMember(int teamId, string personId)
         {
-            if (await _teamService.RemoveMember(teamId, personId))
+            if (await _teamService.RemoveMemberAsync(teamId, personId))
                 return RedirectToAction("Edit", new { id = teamId });
             else
                 return RedirectToAction("Error", "Home");
@@ -68,9 +68,9 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddLeague(int teamId, int leagueId)
         {
-            if (await _teamService.AddLeague(teamId, leagueId))
+            if (await _teamService.AddLeagueAsync(teamId, leagueId))
             {
-                await _teamService.AddUpcomingLeagueRaces(teamId, leagueId);
+                await _teamService.AddUpcomingLeagueRacesAsync(teamId, leagueId);
                 
                 return RedirectToAction("Edit", new { id = teamId });
             }
@@ -83,9 +83,9 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveLeague(int teamId, int leagueId)
         {
-            if (await _teamService.RemoveLeague(teamId, leagueId))
+            if (await _teamService.RemoveLeagueAsync(teamId, leagueId))
             {
-                await _teamService.RemoveUpcomingLeagueRaces(teamId: teamId, leagueId: leagueId);
+                await _teamService.RemoveUpcomingLeagueRacesAsync(teamId: teamId, leagueId: leagueId);
                 
                 return RedirectToAction("Edit", new { id = teamId });
             }
@@ -97,7 +97,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddRace(int teamId, int raceId)
         {
-            if (await _teamService.AddRace(teamId, raceId))
+            if (await _teamService.AddRaceAsync(teamId, raceId))
                 return RedirectToAction("Edit", new { id = teamId });
             else
                 return RedirectToAction("Error", "Home");
@@ -107,7 +107,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveRace(int teamId, int raceId)
         {
-            if (await _teamService.RemoveRace(teamId, raceId))
+            if (await _teamService.RemoveRaceAsync(teamId, raceId))
                 return RedirectToAction("Edit", new { id = teamId });
             else
                 return RedirectToAction("Error", "Home");
@@ -118,7 +118,7 @@ namespace FiresportCalendar.Controllers
         public async Task<IActionResult> Edit(int id)
         {
 
-            var team = await _teamService.GetTeamById(id);
+            var team = await _teamService.GetByIdAsync(id);
             if (team == null)
             {
                 return NotFound();
@@ -128,10 +128,10 @@ namespace FiresportCalendar.Controllers
 
             var model = new TeamEditViewModel();
             model.Team = team;
-            model.AllPeople = await _personService.GetPeople();
+            model.AllPeople = await _personService.GetAllAsync();
             model.NonMembers = model.AllPeople.Where(p => !team.People.Contains(p)).ToList();
             model.NonTeamLeagues = (await _leagueService.GetAllAsync()).Where(l => !team.Leagues.Contains(l)).ToList();
-            model.NonTeamRaces = (await _raceService.GetAllUpcomingRaces()).Where(r => !team.TeamRaces.Select(tr => tr.RaceId).Contains(r.Id)).ToList();
+            model.NonTeamRaces = (await _raceService.GetAllUpcomingRacesAsync()).Where(r => !team.TeamRaces.Select(tr => tr.RaceId).Contains(r.Id)).ToList();
 
             return View(model);
         }
@@ -139,7 +139,7 @@ namespace FiresportCalendar.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail (int id)
         {
-            Team? team = await _teamService.GetTeamById(id);
+            Team? team = await _teamService.GetByIdAsync(id);
 
             if (team == null)
                 return NotFound();
@@ -154,7 +154,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetRacePositions([FromForm] int teamId, [FromForm] int raceId, [FromForm] string kos, [FromForm] string spoj, [FromForm] string stroj, [FromForm] string becka, [FromForm] string rozdel, [FromForm] string lp, [FromForm] string pp)
         {
-            await _teamRaceService.SetTeamRacePeople(teamId: teamId, raceId: raceId, kos: kos, spoj: spoj, stroj: stroj, becka: becka, rozdel: rozdel, lp: lp, pp: pp);
+            await _teamRaceService.SetPeopleAsync(teamId: teamId, raceId: raceId, kos: kos, spoj: spoj, stroj: stroj, becka: becka, rozdel: rozdel, lp: lp, pp: pp);
             
             return RedirectToAction("Edit", new { id = teamId });
         }
@@ -167,7 +167,7 @@ namespace FiresportCalendar.Controllers
             try
             {
                 if (personId != null && await _teamService.IsMember(teamId, personId))
-                    if (!await _teamRaceService.AddTeamRacePerson(teamId, raceId, positionId, personId))
+                    if (!await _teamRaceService.AddPersonAsync(teamId, raceId, positionId, personId))
                         return BadRequest("Tuto pozici už potvrdil někdo jiný.");
             }
             catch (Exception ex)
@@ -183,13 +183,13 @@ namespace FiresportCalendar.Controllers
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (personId != null && await _teamService.IsMember(teamId, personId))
-                await _teamRaceService.RemoveTeamRacePerson(teamId, raceId, positionId, personId);
+                await _teamRaceService.RemovePersonAsync(teamId, raceId, positionId, personId);
         }
 
         [HttpGet]
         public async Task<IActionResult> TimerRaces()
         {
-            var races = await _raceService.GetTimerRaces();
+            var races = await _raceService.GetTimerRacesAsync();
             foreach (var race in races) {
                 if (race.LeagueId.HasValue)
                     race.League = await _leagueService.GetByIdAsync(race.LeagueId.Value);
@@ -203,7 +203,7 @@ namespace FiresportCalendar.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleActive(int id)
         {
-            await _teamService.ToggleActive(id);
+            await _teamService.ToggleActiveAsync(id);
 
             return RedirectToAction("Index", id);
         }
@@ -214,7 +214,7 @@ namespace FiresportCalendar.Controllers
         {
             try
             {
-                var races = await _raceService.GetRacesByIds(raceIds);
+                var races = await _raceService.GetByIdsAsync(raceIds);
                 var calendar = _calendarService.Export(races);
 
                 var bytes = Encoding.UTF8.GetBytes(calendar);

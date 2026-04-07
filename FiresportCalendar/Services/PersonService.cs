@@ -11,11 +11,11 @@ namespace FiresportCalendar.Services
             _context = context;
            
         }
-        public async Task<Person?> GetPersonById(string personId)
+        public async Task<Person?> GetByIdAsync(string personId)
         {
             return await _context.Users.FirstAsync(u => u.Id == personId);
         }
-        public async Task<List<Person>> GetPeople()
+        public async Task<List<Person>> GetAllAsync()
         {
             return await _context.Users.ToListAsync();
       

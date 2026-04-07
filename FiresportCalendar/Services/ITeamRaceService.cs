@@ -5,16 +5,16 @@ namespace FiresportCalendar.Services
 {
     public interface ITeamRaceService
     {
-        Task<List<TeamRace>> GetUpcomingTeamRacesByTeamId(int teamId);
-        Task<List<TeamRace>> GetAllTeamRacesByTeamId(int teamId);
+        Task<List<TeamRace>> GetUpcomingByTeamIdAsync(int teamId);
+        Task<List<TeamRace>> GetAllByTeamIdAsync(int teamId);
 
-        Task<List<TeamRace>> GetAllTeamRacesByRaceId(int raceId);
-        Task<List<TeamRace>> GetUpcomingTeamRacesByRaceId(int raceId);
+        Task<List<TeamRace>> GetAllByRaceIdAsync(int raceId);
+        Task<List<TeamRace>> GetUpcomingByRaceIdAsync(int raceId);
 
-        Task<List<TeamRacePerson>> GetTeamRacePeople(int raceId, int teamId);
-        Task<List<TeamRace>> SetTeamRacePeople(int teamId, int raceId, string kos, string spoj, string stroj, string becka, string rozdel, string lp, string pp);
-        Task<bool> AddTeamRacePerson(int teamId, int raceId, int positionId, string personId);
-        Task RemoveTeamRacePerson(int teamId, int raceId, int positionId, string personId);
+        Task<List<TeamRacePerson>> GetPeopleAsync(int raceId, int teamId);
+        Task<List<TeamRace>> SetPeopleAsync(int teamId, int raceId, string kos, string spoj, string stroj, string becka, string rozdel, string lp, string pp);
+        Task<bool> AddPersonAsync(int teamId, int raceId, int positionId, string personId);
+        Task RemovePersonAsync(int teamId, int raceId, int positionId, string personId);
 
     }
 }

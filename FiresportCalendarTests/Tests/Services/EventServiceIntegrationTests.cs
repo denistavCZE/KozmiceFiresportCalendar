@@ -34,9 +34,9 @@ namespace FiresportCalendar.Tests.Tests.Services
                 DateTime = time
             };
 
-            await service.AddEvent(@event);
+            await service.AddAsync(@event);
 
-            var saved = await service.GetEventById(@event.Id);
+            var saved = await service.GetByIdAsync(@event.Id);
 
             Assert.NotNull(saved);
             Assert.Equal("Test Event", saved.Name);
@@ -57,7 +57,7 @@ namespace FiresportCalendar.Tests.Tests.Services
 
             await context.SaveChangesAsync();
 
-            await service.AddEventPerson(@event.Id, person.Id);
+            await service.AddPersonAsync(@event.Id, person.Id);
 
             var exists = await context.EventPeople
                 .AnyAsync(ep => ep.EventId == @event.Id && ep.PersonId == person.Id);
@@ -78,7 +78,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Events.AddRange(event1, event2, event3);
             await context.SaveChangesAsync();
 
-            var result = await service.GetEventsByIds(new List<int> { event1.Id, event3.Id });
+            var result = await service.GetByIdsAsync(new List<int> { event1.Id, event3.Id });
 
             Assert.Equal(2, result.Count);
             Assert.Equal("Test Event3", result[0].Name);
@@ -103,7 +103,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.EventPeople.Add(new EventPerson(event1.Id, person.Id));
             await context.SaveChangesAsync();
 
-            var result = await service.GetPersonEvents(person.Id);
+            var result = await service.GetByPersonIdAsync(person.Id);
 
             Assert.Single(result);
             Assert.Contains(event1.Id, result);
@@ -130,7 +130,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.EventPeople.Add(new EventPerson(@event.Id, person2.Id));
             await context.SaveChangesAsync();
 
-            var result = await service.GetEventDetail(@event.Id);
+            var result = await service.GetDetailByIdAsync(@event.Id);
 
             Assert.NotNull(result);
             Assert.Contains("Test person1", result.People);
@@ -149,7 +149,7 @@ namespace FiresportCalendar.Tests.Tests.Services
 
             var @event = new Event { Name = "Test Event", Place = "Hlučín", DateTime = time };
 
-            await service.AddEvent(@event);
+            await service.AddAsync(@event);
 
             
             var person1 = new Person { Id = "1", UserName = "Test person1" };
@@ -168,9 +168,9 @@ namespace FiresportCalendar.Tests.Tests.Services
             @event.Place = "Kozmice";
             @event.DateTime = @event.DateTime.AddDays(1);
           
-            await service.UpdateEventAsync(@event);
+            await service.UpdateAsync(@event);
 
-            var result = await service.GetEventDetail(@event.Id);
+            var result = await service.GetDetailByIdAsync(@event.Id);
 
             Assert.NotNull(result);
             Assert.Contains("Test person1", result.People);
@@ -195,7 +195,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             };
 
             await Assert.ThrowsAsync<Exception>(() =>
-                service.UpdateEventAsync(nonExistingEvent));
+                service.UpdateAsync(nonExistingEvent));
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             using var context = CreateContext();
             var service = new EventService(context);
 
-            var result = await service.GetEventDetail(999);
+            var result = await service.GetDetailByIdAsync(999);
 
             Assert.Null(result);
         }
@@ -223,7 +223,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             await context.SaveChangesAsync();
 
             var exception = await Record.ExceptionAsync(() =>
-                service.RemoveEventPerson(@event.Id, person.Id));
+                service.RemovePersonAsync(@event.Id, person.Id));
 
             Assert.Null(exception);
         }
@@ -246,7 +246,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             using var context = CreateContext();
             var service = new EventService(context);
 
-            var exists = await service.EventExists(999);
+            var exists = await service.ExistsAsync(999);
 
             Assert.False(exists);
         }
@@ -274,7 +274,7 @@ namespace FiresportCalendar.Tests.Tests.Services
             context.Events.AddRange(pastEvent, futureEvent);
             await context.SaveChangesAsync();
 
-            var events = await service.GetEvents();
+            var events = await service.GetAllAsync();
 
             Assert.Single(events);
             Assert.Equal("New Event Name", events.First().Name);

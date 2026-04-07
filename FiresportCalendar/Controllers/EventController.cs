@@ -25,7 +25,7 @@ namespace FiresportCalendar.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _eventService.GetEvents());
+            return View(await _eventService.GetAllAsync());
         }
 
         // GET: Events/Detail/5
@@ -37,7 +37,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var model = await _eventService.GetEventDetail(id.Value);
+            var model = await _eventService.GetDetailByIdAsync(id.Value);
 
             if (model == null) 
             {
@@ -63,7 +63,7 @@ namespace FiresportCalendar.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _eventService.AddEvent(@event);
+                await _eventService.AddAsync(@event);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -80,7 +80,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var @event = await _eventService.GetEventById(id.Value);
+            var @event = await _eventService.GetByIdAsync(id.Value);
 
             if (@event == null)
             {
@@ -104,11 +104,11 @@ namespace FiresportCalendar.Controllers
             {
                 try
                 {
-                    await _eventService.UpdateEventAsync(@event);
+                    await _eventService.UpdateAsync(@event);
                 }
                 catch (Exception)
                 {
-                    if (!await _eventService.EventExists(@event.Id))
+                    if (!await _eventService.ExistsAsync(@event.Id))
                     {
                         return NotFound();
                     }
@@ -132,7 +132,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var @event = await _eventService.GetEventById(id.Value);
+            var @event = await _eventService.GetByIdAsync(id.Value);
             if (@event == null)
             {
                 return NotFound();
@@ -158,7 +158,7 @@ namespace FiresportCalendar.Controllers
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(personId != null) 
-                await _eventService.AddEventPerson(eventId, personId);
+                await _eventService.AddPersonAsync(eventId, personId);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -166,7 +166,7 @@ namespace FiresportCalendar.Controllers
         {
             var personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (personId != null)
-                await _eventService.RemoveEventPerson(eventId, personId);
+                await _eventService.RemovePersonAsync(eventId, personId);
         }
 
         [HttpPost]
@@ -174,7 +174,7 @@ namespace FiresportCalendar.Controllers
         {
             try
             {
-                var events = await _eventService.GetEventsByIds(eventIds);
+                var events = await _eventService.GetByIdsAsync(eventIds);
                 var calendar = _calendarService.Export(events);
 
                 var bytes = Encoding.UTF8.GetBytes(calendar);

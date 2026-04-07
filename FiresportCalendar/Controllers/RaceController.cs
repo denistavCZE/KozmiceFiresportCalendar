@@ -23,7 +23,7 @@ namespace FiresportCalendar.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return View(await _raceService.GetAllUpcomingRaces());
+            return View(await _raceService.GetAllUpcomingRacesAsync());
         }
 
         //GET: Races/Detail/5
@@ -37,7 +37,7 @@ namespace FiresportCalendar.Controllers
 
             EventDetailModel model = new EventDetailModel();
 
-            var race = await _raceService.GetRaceById(id.Value);
+            var race = await _raceService.GetByIdAsync(id.Value);
             if (race == null)
             {
                 return NotFound();
@@ -61,7 +61,7 @@ namespace FiresportCalendar.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _raceService.AddRaceAsync(race);
+                await _raceService.AddAsync(race);
                 return RedirectToAction(nameof(Index));
             }
             return View(race);
@@ -76,7 +76,7 @@ namespace FiresportCalendar.Controllers
                 return NotFound();
             }
 
-            var race = await _raceService.GetRaceById(id.Value);
+            var race = await _raceService.GetByIdAsync(id.Value);
             ViewBag.Leagues = await _leagueService.GetAllAsync();
             if (race == null)
             {
@@ -99,7 +99,7 @@ namespace FiresportCalendar.Controllers
             {
                 try
                 {
-                    await _raceService.UpdateRaceAsync(race);
+                    await _raceService.UpdateAsync(race);
                 }
                 catch (Exception)
                 {
@@ -128,7 +128,7 @@ namespace FiresportCalendar.Controllers
 
         private bool RaceExists(int id)
         {
-            return (_raceService.GetRaceById(id) == null) ? false : true ;
+            return (_raceService.GetByIdAsync(id) == null) ? false : true ;
         }
         
     }

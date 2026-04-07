@@ -11,26 +11,26 @@ namespace FiresportCalendar.Services
         public EventService( ApplicationDbContext context) { 
             _context = context;
         }
-        public async Task<Event?> GetEventById(int eventId)
+        public async Task<Event?> GetByIdAsync(int eventId)
         {
             return await _context.Events.FindAsync(eventId);
         }
-        public async Task<List<Event>> GetEvents()
+        public async Task<List<Event>> GetAllAsync()
         {
             return await _context.Events.Include(e => e.EventPeople).Where(e => e.DateTime >= DateTime.Today).OrderBy(e => e.DateTime).ToListAsync();
         }
-        public async Task<List<Event>> GetEventsByIds(List<int> eventIds)
+        public async Task<List<Event>> GetByIdsAsync(List<int> eventIds)
         {
             return await _context.Events.Where(e => eventIds.Contains(e.Id)).OrderBy(e => e.DateTime).ToListAsync();
         }
-        public async Task AddEventPerson(int eventId, string personId)
+        public async Task AddPersonAsync(int eventId, string personId)
         {
             EventPerson newPerson = new EventPerson(eventId: eventId, personId: personId);
             await _context.EventPeople.AddAsync(newPerson);
 
             await _context.SaveChangesAsync();
         }
-        public async Task RemoveEventPerson(int eventId, string personId)
+        public async Task RemovePersonAsync(int eventId, string personId)
         {
             var person = await _context.EventPeople.FirstOrDefaultAsync(eu => eu.EventId == eventId && eu.PersonId == personId);
 
@@ -40,12 +40,12 @@ namespace FiresportCalendar.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<int>> GetPersonEvents(string personId)
+        public async Task<List<int>> GetByPersonIdAsync(string personId)
         {
             return await _context.EventPeople.Where(eu => eu.PersonId == personId).Select(eu => eu.EventId).ToListAsync();
         }
 
-        public async Task<EventDetailModel?> GetEventDetail(int eventId)
+        public async Task<EventDetailModel?> GetDetailByIdAsync(int eventId)
         {
             var @event = await _context.Events
                                             .Include(e => e.EventPeople)
@@ -66,12 +66,12 @@ namespace FiresportCalendar.Services
             return model;
         }
 
-        public async Task AddEvent(Event @event)
+        public async Task AddAsync(Event @event)
         {
             _context.Add(@event);
             await _context.SaveChangesAsync();
         }
-        public async Task UpdateEventAsync(Event model)
+        public async Task UpdateAsync(Event model)
         {
             var @event = await _context.Events.FindAsync(model.Id);
 
@@ -95,7 +95,7 @@ namespace FiresportCalendar.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> EventExists(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Events.AnyAsync(e => e.Id == id);
         }

@@ -4,7 +4,7 @@ namespace FiresportCalendar.Services
 {
     public interface IPersonService
     {
-        Task<Person?> GetPersonById(string personId);
-        Task<List<Person>> GetPeople();
+        Task<Person?> GetByIdAsync(string personId);
+        Task<List<Person>> GetAllAsync();
     }
 }

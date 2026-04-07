@@ -19,7 +19,7 @@ namespace FiresportCalendar.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            List<Team> teams = await _teamService.GetActiveTeams();
+            List<Team> teams = await _teamService.GetActiveTeamsAsync();
             return View(teams);
         }
     }

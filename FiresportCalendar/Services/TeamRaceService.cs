@@ -12,29 +12,29 @@ namespace FiresportCalendar.Services
             _context = context;
            
         }
-        public async Task<List<TeamRace>> GetUpcomingTeamRacesByTeamId(int teamId)
+        public async Task<List<TeamRace>> GetUpcomingByTeamIdAsync(int teamId)
         {
             return await _context.TeamRaces.Where(tr => tr.Team.Id == teamId && tr.Race.DateTime > DateTime.Today).OrderBy(tr => tr.Race.DateTime).ToListAsync();
         }
-        public async Task<List<TeamRace>> GetAllTeamRacesByTeamId(int teamId)
+        public async Task<List<TeamRace>> GetAllByTeamIdAsync(int teamId)
         {
             return await _context.TeamRaces.Where(tr => tr.Team.Id == teamId).OrderBy(tr => tr.Race.DateTime).ToListAsync();
         }
-        public async Task<List<TeamRace>> GetUpcomingTeamRacesByRaceId(int raceId)
+        public async Task<List<TeamRace>> GetUpcomingByRaceIdAsync(int raceId)
         {
             return await _context.TeamRaces.Where(tr => tr.Race.Id == raceId && tr.Race.DateTime > DateTime.Today).OrderBy(tr => tr.Race.DateTime).ToListAsync();
         }
-        public async Task<List<TeamRace>> GetAllTeamRacesByRaceId(int raceId)
+        public async Task<List<TeamRace>> GetAllByRaceIdAsync(int raceId)
         {
             return await _context.TeamRaces.Where(tr => tr.Race.Id == raceId).OrderBy(tr => tr.Race.DateTime).ToListAsync();
         }
-        public async Task<List<TeamRacePerson>> GetTeamRacePeople(int raceId, int teamId)
+        public async Task<List<TeamRacePerson>> GetPeopleAsync(int raceId, int teamId)
         {
             return await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId).ToListAsync();
         }
        
 
-        public async Task<List<TeamRace>> SetTeamRacePeople(int teamId, int raceId, string kos, string spoj, string stroj, string becka, string rozdel, string lp, string pp)
+        public async Task<List<TeamRace>> SetPeopleAsync(int teamId, int raceId, string kos, string spoj, string stroj, string becka, string rozdel, string lp, string pp)
         {
 
             List<TeamRacePerson> teamRacePeople = new List<TeamRacePerson>();
@@ -63,7 +63,7 @@ namespace FiresportCalendar.Services
 
             return await _context.TeamRaces.Where(r => r.Team.Id == teamId).ToListAsync();
         }
-        public async Task<bool> AddTeamRacePerson(int teamId, int raceId, int positionId, string personId)
+        public async Task<bool> AddPersonAsync(int teamId, int raceId, int positionId, string personId)
         {
             if (positionId != -1) // Celkovou neúčast může mít více lidí
             {
@@ -85,7 +85,7 @@ namespace FiresportCalendar.Services
 
             return true;
         }
-        public async Task RemoveTeamRacePerson(int teamId, int raceId, int positionId, string personId)
+        public async Task RemovePersonAsync(int teamId, int raceId, int positionId, string personId)
         {
           
             var person = await _context.TeamRacePeople.Where(tr => tr.TeamId == teamId && tr.RaceId == raceId && tr.Position == positionId).FirstOrDefaultAsync();
