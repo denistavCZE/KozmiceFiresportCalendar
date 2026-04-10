@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 namespace FiresportCalendar
 {
@@ -14,9 +15,26 @@ namespace FiresportCalendar
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             var connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb") ?? builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Environment variable 'MYSQLCONNSTR_localdb' nor Connection string DefaultConnection was found.");
+
+            // Pokud je naètený connection string v retardovaném tvaru z azure mysql in app
+            if (connectionString.Contains("Data Source="))
+            {
+                var parts = connectionString.Split(';');
+
+                var dataSource = parts.First(p => p.StartsWith("Data Source=")).Replace("Data Source=", "");
+
+                var userPart = parts.First(p => p.StartsWith("User Id=")).Replace("User Id=", "");
+
+                var passPart = parts.First(p => p.StartsWith("Password=")).Replace("Password=", "");
+
+                var hostPort = dataSource.Split(':');
+
+                var host = hostPort[0];
+                var port = hostPort[1];
+
+                connectionString = $"Server={host};Port={port};Database=localdb;Uid={userPart};Pwd={passPart};";
+            }
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -41,7 +59,7 @@ namespace FiresportCalendar
 
             #region Services
             builder.Services.AddMemoryCache();
-            builder.Services.AddTransient<IEmailSender, EmailService>(); 
+            builder.Services.AddTransient<IEmailSender, EmailService>();
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddScoped<IReCaptchaService, FakeReCaptchaService>();
@@ -60,7 +78,7 @@ namespace FiresportCalendar
 
             #endregion
             var app = builder.Build();
-                
+
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
