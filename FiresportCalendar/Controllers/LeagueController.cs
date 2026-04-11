@@ -45,9 +45,8 @@ namespace FiresportCalendar.Controllers
 
         // GET: Leagues/Create
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            ViewBag.Leagues = await _leagueService.GetAllAsync();
             return View();
         }
 

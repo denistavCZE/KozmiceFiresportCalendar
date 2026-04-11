@@ -1,7 +1,7 @@
 ﻿@model FiresportCalendar.Models.League
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
 {
-    <h2>Nový závod</h2>
+    <h2>Nová liga</h2>
 
     <form asp-action="Create" method="post">
         @Html.AntiForgeryToken()
