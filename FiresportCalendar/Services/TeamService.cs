@@ -33,7 +33,11 @@ namespace FiresportCalendar.Services
         {
             return await _context.Teams.Where(t => t.Active).OrderBy(t => t.Name).ToListAsync();
         }
-
+        public async Task AddAsync(Team team)
+        {
+            _context.Teams.Add(team);
+            await _context.SaveChangesAsync();
+        }
         public async Task<bool> AddMemberAsync(int teamId, string personId)
         {
             var team = await _context.Teams.Include(t => t.People).FirstOrDefaultAsync(t => t.Id == teamId);
@@ -216,7 +220,16 @@ namespace FiresportCalendar.Services
 
             _context.SaveChanges();
         }
+        public async Task DeleteByIdAsync(int id)
+        {
+            var team = await _context.Teams.FindAsync(id);
+            if (team != null)
+            {
+                _context.Teams.Remove(team);
+            }
 
+            await _context.SaveChangesAsync();
+        }
 
     }
 }

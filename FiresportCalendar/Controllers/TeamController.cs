@@ -41,6 +41,25 @@ namespace FiresportCalendar.Controllers
             return View(await _teamService.GetAllAsync());
         }
 
+        // GET: Teams/Create
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Teams/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Team team)
+        {
+            if (ModelState.IsValid)
+            {
+                await _teamService.AddAsync(team);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(team);
+        }
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -227,5 +246,14 @@ namespace FiresportCalendar.Controllers
             }
         }
 
+        // POST: Teams/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _teamService.DeleteByIdAsync(id);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

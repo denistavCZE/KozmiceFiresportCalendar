@@ -7,6 +7,7 @@ namespace FiresportCalendar.Services
         Task<Team?> GetByIdAsync(int teamId);
         Task<List<Team>> GetAllAsync();
         Task<List<Team>> GetActiveTeamsAsync();
+        Task AddAsync(Team team);
         Task<bool> AddMemberAsync(int teamId, string personId);
         Task<bool> RemoveMemberAsync(int teamId, string personId);
         Task<bool> AddLeagueAsync(int teamId, int leagueId);
@@ -19,6 +20,7 @@ namespace FiresportCalendar.Services
         Task AddUpcomingLeagueRacesAsync(int teamId, int leagueId);
         Task RemoveUpcomingLeagueRacesAsync(int teamId, int leagueId);
         Task ToggleActiveAsync(int teamId);
+        Task DeleteByIdAsync(int id);
 
     }
 }
