@@ -8,22 +8,22 @@
     @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-action="Index" asp-controller="Team" class="nav-link">
+            <a class="nav-link text-dark" asp-action="Index" asp-controller="Team">
                 Týmy
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-action="Index" asp-controller="Race" class="nav-link">
+            <a class="nav-link text-dark" asp-action="Index" asp-controller="Race">
                 Závody
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-action="Index" asp-controller="League" class="nav-link">
+            <a class="nav-link text-dark" asp-action="Index" asp-controller="League">
                 Ligy
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-action="Index" asp-controller="ManageRoles" class="nav-link">
+            <a class="nav-link text-dark" asp-action="Index" asp-controller="ManageRoles">
                 Role
             </a>
         </li>
