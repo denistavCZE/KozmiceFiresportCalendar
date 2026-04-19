@@ -75,7 +75,7 @@
                         }
 
                    
-                        <div id="away-box" class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
+                        <div id="@race.RaceId-away-box" class="row @((race.TeamRacePeople.Any(trp => trp.Position == -1))?"":"d-none")">
                             <h5 class="text-danger mt-1">
                                 Nemůže:
                             </h5>
@@ -140,7 +140,7 @@
             type: 'POST',
             data: { teamId: teamId, raceId: raceId, positionId: positionId },
             success: function (response) {
-                SetPersonToInput(raceId, 0);
+                SetPersonToInput(raceId, 0); // 0 se nastavuje pro odvázání od aktuální pozice - nemůžu se nastavuju jako confirm k pozici -1
             },
             error: function (xhr, status, error) {
                 alert('Nastala chyba při odesílání dat: ' + error);
@@ -150,8 +150,8 @@
 
     function SetPersonToInput(raceId, positionId){
 
+        // Vyčištění inputu staré přiřazené pozice
         for (var i = 1; i < 8; i++) {
-
             var oldInput = document.getElementById(raceId + "-" + i);
             if (oldInput.value.includes("@User.Identity.Name")) {
                 var oldDecButton = document.getElementById(raceId + "-" + i + "-" + "dec");
@@ -161,6 +161,8 @@
                 oldConButton.classList.remove("d-none");
             }
         }
+
+        // Případné odstranění uživatele ze seznamu těch co nemůžou
         var oldInput = document.getElementById(raceId + "--1");
         if (oldInput.textContent.includes("@User.Identity.Name")) {
             var oldDecButton = document.getElementById(raceId + "--1-" + "dec");
@@ -169,7 +171,7 @@
             oldDecButton.classList.add("d-none");
             oldConButton.classList.remove("d-none");
             if(oldInput.textContent === ""){
-                document.getElementById("away-box").classList.add("d-none");
+                document.getElementById(raceId + "-away-box").classList.add("d-none");
             }
         }
 
@@ -184,7 +186,7 @@
                     newInput.textContent += ", ";
                 }
                 newInput.textContent += "@Html.Raw(User.Identity.Name)";
-                document.getElementById("away-box").classList.remove("d-none");
+                document.getElementById(raceId + "-away-box").classList.remove("d-none");
 
             }
             // Switch buttons
